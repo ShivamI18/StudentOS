@@ -1,5 +1,5 @@
 {
-  "name": "react.json",
+  "name": "studentos.json",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,9 +14,7 @@
     "@capacitor/cli": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-hook-form": "^7.68.0",
-    "react-router-dom": "^7.10.1"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

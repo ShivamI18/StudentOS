@@ -1,32 +1,65 @@
-import { useState } from "react";
-import "./App.css";
-import { Link, Route, Routes } from "react-router-dom";
-import Home from "./Pages/Home";
-import Dashboard from "./pages/Dashboard";
-import Analysis from "./pages/Analysis";
-import Notes from "./pages/Notes";
-import Session from "./pages/Session";
-import Focusmode from './components/Focusmode'
+import { useState } from 'react';
+import UsageStats from './plugins/usageStats.js';
+import './App.css';
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [usageData, setUsageData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const result = await UsageStats.getUsageStats();
+      
+      // Sort: Most used apps first
+      const sortedData = result.data.sort((a, b) => 
+        b.totalTimeForeground - a.totalTimeForeground
+      );
+      
+      setUsageData(sortedData);
+    } catch (err) {
+      console.error('Error:', err);
+      // Alert the user why they are being sent to settings
+      alert("Please enable 'Usage Access' for this app in the next screen.");
+      await UsageStats.openUsageAccessSettings();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to convert ms to readable time
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const hours = Math.floor(minutes / 60);
+    return hours > 0 
+      ? `${hours}h ${minutes % 60}m` 
+      : `${minutes}m`;
+  };
 
   return (
-    <div>
-      <nav>
-        {/* this will be displayed through out the app  */}
-        <Link to={'/'}>Home</Link>
-        <Link to={"/focus"}>Focus Mode</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Home />} /> {/* First page that is displayed */}
-        <Route path="/focus" element={<Focusmode />} ></Route>
-        <Route path="/dashboard" element={<Dashboard />}> {/* after Login first page */}
-        <Route path="/dashboard/session" element={<Session />} /> {/* drop downpart in dashboard - also it consists of all the session along with there in detailed analysis and notes */}
-        <Route path="/dashboard/analysis" element={<Analysis />} /> {/* Overall analysis of the student */}
-        <Route path="/dashboard/notes" element={<Notes />} /> {/* all topic wise notes */}
-        </Route>
-      </Routes>
+    <div className="container" style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>Usage Tracker</h1>
+      <button 
+        onClick={fetchStats} 
+        disabled={loading}
+        style={{ padding: '10px 20px', fontSize: '16px' }}
+      >
+        {loading ? 'Fetching...' : 'Refresh Usage Data'}
+      </button> 
 
+      <div style={{ marginTop: '20px' }}>
+        {usageData.map((app, index) => (
+          <div key={index} style={{ 
+            borderBottom: '1px solid #ddd', 
+            padding: '10px 0',
+            display: 'flex',
+            justifyContent: 'space-between'
+          }}>
+            <strong>{app.packageName.split('.').pop()}</strong>
+            <span>{formatTime(app.totalTimeForeground)}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
