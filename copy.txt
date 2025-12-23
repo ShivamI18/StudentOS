@@ -1,7 +1,7 @@
+APP.jsx - usage tracker 
 import { useState } from 'react';
 import UsageStats from './plugins/usageStats.js';
 import './App.css';
-import { Link } from 'react-router-dom';
 
 function App() {
   const [usageData, setUsageData] = useState([]);
@@ -38,9 +38,29 @@ function App() {
   };
 
   return (
-    <div>
-      <Link to={'/dashboard'} >Sign Up</Link>
-      <Link to={'/dashboard'} >Log in</Link>
+    <div className="container" style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <h1>Usage Tracker</h1>
+      <button 
+        onClick={fetchStats} 
+        disabled={loading}
+        style={{ padding: '10px 20px', fontSize: '16px' }}
+      >
+        {loading ? 'Fetching...' : 'Refresh Usage Data'}
+      </button> 
+
+      <div style={{ marginTop: '20px' }}>
+        {usageData.map((app, index) => (
+          <div key={index} style={{ 
+            borderBottom: '1px solid #ddd', 
+            padding: '10px 0',
+            display: 'flex',
+            justifyContent: 'space-between'
+          }}>
+            <strong>{app.packageName.split('.').pop()}</strong>
+            <span>{formatTime(app.totalTimeForeground)}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
