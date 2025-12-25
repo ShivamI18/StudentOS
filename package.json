@@ -8,7 +8,7 @@
     "build": "vite build",         
     "lint": "eslint .",            
     "preview": "vite preview",     
-    "start": "concurrently \"npm run build && npm run sync && npm run open \"",  
+    "start": "concurrently \"npm run build && npm run sync \"",  
     "sync": "npx cap sync",
     "open" : "npx cap open android"
   },

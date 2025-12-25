@@ -1,42 +1,8 @@
-import { useState } from 'react';
-import UsageStats from './plugins/usageStats.js';
+
 import './App.css';
 import { Link } from 'react-router-dom';
 
 function App() {
-  const [usageData, setUsageData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchStats = async () => {
-    setLoading(true);
-    try {
-      const result = await UsageStats.getUsageStats();
-      
-      // Sort: Most used apps first
-      const sortedData = result.data.sort((a, b) => 
-        b.totalTimeForeground - a.totalTimeForeground
-      );
-      
-      setUsageData(sortedData);
-    } catch (err) {
-      console.error('Error:', err);
-      // Alert the user why they are being sent to settings
-      alert("Please enable 'Usage Access' for this app in the next screen.");
-      await UsageStats.openUsageAccessSettings();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Helper to convert ms to readable time
-  const formatTime = (ms) => {
-    const minutes = Math.floor(ms / 60000);
-    const hours = Math.floor(minutes / 60);
-    return hours > 0 
-      ? `${hours}h ${minutes % 60}m` 
-      : `${minutes}m`;
-  };
-
   return (
     <div>
       <Link to={'/dashboard'} >Sign Up</Link>

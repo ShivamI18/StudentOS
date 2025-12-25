@@ -1,5 +1,8 @@
 {
   "appId": "com.studentos.app",
   "appName": "studentos",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http"
+  }
 }

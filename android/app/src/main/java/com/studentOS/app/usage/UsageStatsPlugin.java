@@ -61,7 +61,6 @@ public class UsageStatsPlugin extends Plugin {
                     JSObject obj = new JSObject();
                     obj.put("packageName", usage.getPackageName());
                     obj.put("totalTimeForeground", usage.getTotalTimeInForeground()); // In milliseconds
-                    obj.put("lastTimeUsed", usage.getLastTimeUsed());
                     dataArray.put(obj);
                 }
             }

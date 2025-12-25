@@ -66,3 +66,95 @@ function App() {
 }
 
 export default App;
+
+
+
+usage tracker with backend post req 
+
+import { useState } from "react";
+import UsageStats from "./plugins/usageStats.js";
+import "./App.css";
+
+function App() {
+  const [usageData, setUsageData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
+  const [fetcherr, setfetcherr] = useState('')
+
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const result = await UsageStats.getUsageStats();
+
+      // Sort: Most used apps first
+      const sortedData = result.data.sort(
+        (a, b) => b.totalTimeForeground - a.totalTimeForeground
+      );
+
+      setUsageData(sortedData);
+
+      const response = await fetch(`http://10.0.2.2:3000/api/usage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sortedData),
+      });
+
+      const res = await response.json();
+      console.log(res);
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Please enable 'Usage Access' for this app in the next screen.");
+      await UsageStats.openUsageAccessSettings();
+    setfetcherr(err.message);
+
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to convert ms to readable time
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const hours = Math.floor(minutes / 60);
+    return hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`;
+  };
+
+  return (
+    <div
+      className="container"
+      style={{ padding: "20px", fontFamily: "sans-serif" }}
+    >
+      <h1>Usage Tracker</h1>
+      <button
+        onClick={fetchStats}
+        disabled={loading}
+        style={{ padding: "10px 20px", fontSize: "16px" }}
+      >
+        {loading ? "Fetching..." : "Refresh Usage Data"}
+      </button>
+
+      <div style={{ marginTop: "20px" }}>
+        {usageData.map((app, index) => (
+          <div
+            key={index}
+            style={{
+              borderBottom: "1px solid #ddd",
+              padding: "10px 0",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <strong>{app.packageName.split(".").pop()}</strong>
+            <span>{formatTime(app.totalTimeForeground)}</span>
+          </div>
+        ))}
+        <div style={{
+            width:'200px'
+        }}>{fetcherr}</div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
