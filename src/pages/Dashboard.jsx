@@ -1,7 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Link,Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 const Dashboard = () => {
+  const {user} = useAuth();
+  useEffect(() => {
+    console.log(user);
+  }, [])
+  
   return (
     <div>
       <div>Dashboard - <Link to={'/focusmode'}>Focus Mode</Link></div>

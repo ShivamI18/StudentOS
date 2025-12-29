@@ -8,6 +8,7 @@ import Session from './pages/Session.jsx'
 import Analysis from './pages/Analysis.jsx'
 import Notes from './pages/Notes.jsx'
 import Focusmode from './pages/Focusmode.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <AuthProvider>
     <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 )
