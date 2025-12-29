@@ -1,0 +1,99 @@
+:root {
+  /* Minimal, calm light theme */
+  --background: #fdfdfd;
+  --foreground: #1f2937;
+
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+
+  /* Google Blue as primary accent */
+  --primary: #1a73e8;
+  --primary-foreground: #ffffff;
+
+  /* Light gray for secondary elements */
+  --secondary: #e5e7eb;
+  --secondary-foreground: #1f2937;
+
+  /* Muted elements */
+  --muted: #e5e7eb;
+  --muted-foreground: #6b7280;
+
+  /* Google Blue accent */
+  --accent: #1a73e8;
+  --accent-foreground: #ffffff;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
+  /* Soft neutral borders */
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #1a73e8;
+
+  --radius: 1rem;
+}
+body{
+    background-color: var(--secondary);
+}
+
+.timerbox {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  padding: 2em;
+  border-radius: var(--radius);
+  border: var(--border);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 1em; 
+  position: absolute;
+  /* remove this line afterwards */
+}
+.timer {
+  text-align: center;
+  color: var(--accent);
+  font-size: 3em;
+  font-weight: 800;
+}
+.timecontroller {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.durationbox{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1em;
+}
+.time{
+    all: unset;
+    background-color: var(--secondary);
+    color: var(--card-foreground);
+    padding: 0.5em 1em;
+    font-size: 1em;
+    font-weight: 600;
+    border: var(--border);
+    border-radius: 5px;
+}
+.timerinput{
+    width: 4em;
+}
+
+.timestart{
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+.timerreset{
+    font-size: 0.5em;
+    padding: 1em 1em 0.5em;
+}
+.timerwrap{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
