@@ -7,14 +7,13 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.getcapacitor.JSArray;
+import com.getcapacitor.JSArray; // Use JSArray for Capacitor
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginMethod;
+import com.getcapacitor.PluginMethod; // Required in v8
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-import java.util.Calendar;
 import java.util.List;
 
 @CapacitorPlugin(name = "UsageStats")
@@ -22,7 +21,6 @@ public class UsageStatsPlugin extends Plugin {
 
     private static final String TAG = "UsageStatsPlugin";
 
-    // Opens Usage Access permission screen
     @PluginMethod
     public void openUsageAccessSettings(PluginCall call) {
         try {
@@ -35,22 +33,13 @@ public class UsageStatsPlugin extends Plugin {
         }
     }
 
-    // Fetch today's usage stats (from midnight)
     @PluginMethod
     public void getUsageStats(PluginCall call) {
         try {
-            UsageStatsManager usm =
-                    (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
+            UsageStatsManager usm = (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
 
-            // Get today's midnight
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            long startTime = calendar.getTimeInMillis();
             long endTime = System.currentTimeMillis();
+            long startTime = endTime - (1000L * 60 * 60 * 24); // 24 hours
 
             List<UsageStats> stats = usm.queryUsageStats(
                     UsageStatsManager.INTERVAL_DAILY,
@@ -58,7 +47,7 @@ public class UsageStatsPlugin extends Plugin {
                     endTime
             );
 
-            // Permission check
+            // If the user hasn't granted permission, queryUsageStats returns an empty list (usually)
             if (stats == null || stats.isEmpty()) {
                 call.reject("PERMISSION_DENIED_OR_NO_DATA");
                 return;
@@ -67,14 +56,11 @@ public class UsageStatsPlugin extends Plugin {
             JSArray dataArray = new JSArray();
 
             for (UsageStats usage : stats) {
-                long timeMs = usage.getTotalTimeInForeground();
-
-                // Ignore unused apps
-                if (timeMs > 0) {
+                // Filter out apps with 0 foreground time to keep the payload small
+                if (usage.getTotalTimeInForeground() > 0) {
                     JSObject obj = new JSObject();
                     obj.put("packageName", usage.getPackageName());
-                    obj.put("totalTimeForegroundMs", timeMs);
-                    obj.put("totalTimeForeground", formatDuration(timeMs));
+                    obj.put("totalTimeForeground", usage.getTotalTimeInForeground()); // In milliseconds
                     dataArray.put(obj);
                 }
             }
@@ -84,18 +70,8 @@ public class UsageStatsPlugin extends Plugin {
             call.resolve(result);
 
         } catch (Exception e) {
-            Log.e(TAG, "Error getting usage stats", e);
+            Log.e(TAG, "Error", e);
             call.reject(e.getMessage());
         }
-    }
-
-    // Converts milliseconds → HH:MM:SS
-    private String formatDuration(long millis) {
-        long seconds = millis / 1000;
-        long hours = seconds / 3600;
-        long minutes = (seconds % 3600) / 60;
-        long remainingSeconds = seconds % 60;
-
-        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
     }
 }

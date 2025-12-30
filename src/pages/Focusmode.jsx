@@ -25,7 +25,7 @@ const Focusmode = () => {
     try {
       const result = await UsageStats.getUsageStats();
       const sortedData = result.data.sort(
-        (a, b) => b.totalTimeForegroundMs - a.totalTimeForegroundMs
+        (a, b) => b.totalTimeForeground - a.totalTimeForeground
       );
 
       setUsageData(sortedData);
@@ -85,13 +85,13 @@ const Focusmode = () => {
       console.log(res.message);
       setAnalysis(parsed);
     } catch (err) {
-      console.error(err+" custom");
+      console.error(err);
     }
   };
 
   const extractJSON = (raw) => {
     const match = raw.match(/```json([\s\S]*?)```/i);
-    if (!match) return raw;
+    if (!match) throw new Error("No JSON block found");
     return match[1].trim();
   };
   const sanitizeJSON = (jsonString) => {
@@ -119,6 +119,20 @@ const Focusmode = () => {
     return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
       .toString()
       .padStart(2, "0")}`;
+  };
+  const formatmiliTime = (msec) => {
+    const sec = msec / 1000;
+    const hrs = Math.floor(sec / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = Math.floor(sec % 60);
+
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -163,8 +177,8 @@ const Focusmode = () => {
                 justifyContent: "space-between",
               }}
             >
-              <strong>{app.packageName}</strong>
-              <span>{app.totalTimeForeground}</span>
+              <strong>{app.packageName.split(".").pop()}</strong>
+              <span>{formatmiliTime(app.totalTimeForeground)}</span>
             </div>
           ))}
           {userData.subject} - {userData.topics} - {userData.rating} -{" "}
