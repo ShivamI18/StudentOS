@@ -1,68 +1,84 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
+*{
+  margin: 0;padding: 0;box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  font-style: normal;
 }
-a:hover {
-  color: #535bf2;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* ===== Brand Colors ===== */
+  --color-primary: #1D4ED8;        /* Deep Blue */
+  --color-primary-hover: #1E3A8A;
+  --color-secondary: #14B8A6;      /* Teal */
+  --color-secondary-hover: #0D9488;
+  --color-accent: #F59E0B;         /* Amber */
+
+  /* ===== Backgrounds ===== */
+  --bg-main: #F8FAFC;              /* App background */
+  --bg-section: #F1F5F9;           /* Section background */
+  --bg-card: #FFFFFF;              /* Card background */
+  --bg-card-hover: #F8FAFC;
+  --bg-disabled: #E5E7EB;
+
+  /* ===== Text Colors ===== */
+  --text-primary: #1F2933;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-disabled: #CBD5E1;
+  --text-inverse: #FFFFFF;
+
+  /* ===== Borders & Dividers ===== */
+  --border-default: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --border-card: #E5E7EB;
+  --border-disabled: #CBD5E1;
+
+  /* ===== States ===== */
+  --state-active: #14B8A6;
+  --state-hover: #1D4ED8;
+  --state-focus: #93C5FD;
+  --state-disabled: #9CA3AF;
+
+  /* ===== Buttons ===== */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-hover: var(--color-primary-hover);
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-disabled: #93C5FD;
+
+  --btn-secondary-bg: var(--color-secondary);
+  --btn-secondary-hover: var(--color-secondary-hover);
+  --btn-secondary-text: #FFFFFF;
+
+  /* ===== Shadows ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+
+.monbold {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+.monthin {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.monethin {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+.monebold {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
 }
