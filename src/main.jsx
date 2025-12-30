@@ -9,6 +9,9 @@ import Analysis from './pages/Analysis.jsx'
 import Notes from './pages/Notes.jsx'
 import Focusmode from './pages/Focusmode.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import GoogleAuth from './components/GoogleAuth.jsx'
+import VerifyEmail from './pages/VerifyEmail.jsx'
 
 const router = createBrowserRouter([
   {
@@ -16,8 +19,16 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
+    path:'/auth',
+    element:<GoogleAuth/>
+  },
+  {
+    path:'/verify-email',
+    element:<VerifyEmail/>
+  },
+  {
     path: '/dashboard',
-    element: <Dashboard/>,
+    element: <ProtectedRoute><Dashboard/></ProtectedRoute>,
     children:[
       {
         path:'/dashboard/session',
@@ -35,7 +46,7 @@ const router = createBrowserRouter([
   },
   {
     path:'/focusmode',
-    element: <Focusmode />
+    element: <ProtectedRoute><Focusmode /></ProtectedRoute>
   }
 ])
 

@@ -1,41 +1,71 @@
-import { auth, googleProvider } from "../firebase";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
-import { useEffect } from "react";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
-function GoogleAuth({ content }) {
+function GoogleAuth() {
+  const [isLogin, setIsLogin] = useState(true); 
+  const [error, setError] = useState("");
+  const { loginWithEmailPassword, signupWithEmailPassword } = useAuth();
   const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const signInWithGoogle = async () => {
+  const onSubmitLogin = async (data) => {
+    const { email, password } = data;
     try {
-      await signInWithRedirect(auth, googleProvider);
-    } catch (error) {
-      console.error(error );
+      await loginWithEmailPassword(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid email or password");
     }
   };
 
-  useEffect(() => {
-    // Check if user just came back from redirect
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          navigate("/dashboard");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [navigate]);
+  const onSubmitSignUp = async (data) => {
+    const { email, password } = data;
+    try {
+      await signupWithEmailPassword(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Error signing up");
+    }
+  };
 
   return (
-    <button
-      style={{
-        all: "unset",
-      }}
-      onClick={signInWithGoogle}
-    >
-      {content}
-    </button>
+    <div>
+      <h2>{isLogin ? "Login" : "Sign Up"}</h2>
+      <form onSubmit={handleSubmit(isLogin ? onSubmitLogin : onSubmitSignUp)}>
+        <div>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            {...register("email", { 
+              required: "Email is required", 
+              pattern: /^[^@]+@[^@]+\.[^@]+$/i 
+            })}
+          />
+          {errors.email && <p>{errors.email.message}</p>}
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Enter your password"
+            {...register("password", { 
+              required: "Password is required", 
+              minLength: { value: 6, message: "Password must be at least 6 characters" } 
+            })}
+          />
+          {errors.password && <p>{errors.password.message}</p>}
+        </div>
+        <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+      </form>
+
+      <p>{isLogin ? "Don't have an account?" : "Already have an account?"}</p>
+      <button onClick={() => { setError(""); setIsLogin(!isLogin); }}>
+        {isLogin ? "Sign up here" : "Login here"}
+      </button>
+
+      {error && <p>{error}</p>}
+    </div>
   );
 }
 

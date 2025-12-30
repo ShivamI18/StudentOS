@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import UsageStats from "../plugins/usageStats";
-const API_URL = import.meta.env.VITE_API_URL;
 const Focusmode = () => {
   const [seconds, setSeconds] = useState(3661);
   const [running, setRunning] = useState(false);
@@ -65,20 +64,26 @@ const Focusmode = () => {
 
   const handleAnalysis = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/usage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(usageData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_KEY}/api/usage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(usageData),
+        }
+      );
 
       const result = await response.json();
       console.log(result.message);
 
-      const resp = await fetch(`${API_URL}/api/focusmode`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
+      const resp = await fetch(
+        `${import.meta.env.VITE_BACKEND_API_KEY}/api/focusmode`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        }
+      );
 
       const res = await resp.json();
       const parsed = await parseAIResponse(res.advice);
@@ -119,20 +124,6 @@ const Focusmode = () => {
     return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
       .toString()
       .padStart(2, "0")}`;
-  };
-  const formatmiliTime = (msec) => {
-    const sec = msec / 1000;
-    const hrs = Math.floor(sec / 3600);
-    const mins = Math.floor((sec % 3600) / 60);
-    const secs = Math.floor(sec % 60);
-
-    if (hrs > 0) {
-      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
-        .toString()
-        .padStart(2, "0")}`;
-    }
-
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -177,8 +168,8 @@ const Focusmode = () => {
                 justifyContent: "space-between",
               }}
             >
-              <strong>{app.packageName.split(".").pop()}</strong>
-              <span>{formatmiliTime(app.totalTimeForeground)}</span>
+              <strong>{app.packageName}</strong>
+              <span>{app.totalTimeForeground}</span>
             </div>
           ))}
           {userData.subject} - {userData.topics} - {userData.rating} -{" "}
@@ -199,7 +190,9 @@ const Focusmode = () => {
                 <h2>Questions</h2>
                 {Analysis.questions?.map((q, i) => (
                   <div key={i}>
-                    <div>Question {i+1}: {q.q}</div>
+                    <div>
+                      Question {i + 1}: {q.q}
+                    </div>
                     <div>Answer: {q.a}</div>
                   </div>
                 ))}

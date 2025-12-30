@@ -14,6 +14,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod; // Required in v8
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import java.util.Calendar;
 import java.util.List;
 
 @CapacitorPlugin(name = "UsageStats")
@@ -36,18 +37,26 @@ public class UsageStatsPlugin extends Plugin {
     @PluginMethod
     public void getUsageStats(PluginCall call) {
         try {
+            // Get the current date and calculate the start of today (midnight)
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            long startTime = calendar.getTimeInMillis(); // Midnight of today
+            long endTime = System.currentTimeMillis();  // Current time
+
+            // Get the UsageStatsManager service
             UsageStatsManager usm = (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
 
-            long endTime = System.currentTimeMillis();
-            long startTime = endTime - (1000L * 60 * 60 * 24); // 24 hours
-
+            // Query usage stats for today (from midnight to current time)
             List<UsageStats> stats = usm.queryUsageStats(
                     UsageStatsManager.INTERVAL_DAILY,
                     startTime,
                     endTime
             );
 
-            // If the user hasn't granted permission, queryUsageStats returns an empty list (usually)
+            // If no usage stats or permission denied, return error
             if (stats == null || stats.isEmpty()) {
                 call.reject("PERMISSION_DENIED_OR_NO_DATA");
                 return;
@@ -60,11 +69,20 @@ public class UsageStatsPlugin extends Plugin {
                 if (usage.getTotalTimeInForeground() > 0) {
                     JSObject obj = new JSObject();
                     obj.put("packageName", usage.getPackageName());
-                    obj.put("totalTimeForeground", usage.getTotalTimeInForeground()); // In milliseconds
+
+                    // Convert total time in foreground (milliseconds) to hours and minutes
+                    long totalTime = usage.getTotalTimeInForeground();
+                    long hours = totalTime / (1000 * 60 * 60); // Convert to hours
+                    long minutes = (totalTime % (1000 * 60 * 60)) / (1000 * 60); // Convert to minutes
+
+                    String timeFormatted = String.format("%02d:%02d", hours, minutes);
+                    obj.put("totalTimeForeground", timeFormatted);
+
                     dataArray.put(obj);
                 }
             }
 
+            // Return the usage stats data
             JSObject result = new JSObject();
             result.put("data", dataArray);
             call.resolve(result);
