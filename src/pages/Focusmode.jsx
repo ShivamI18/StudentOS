@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link,NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import UsageStats from "../plugins/usageStats";
@@ -223,6 +223,49 @@ const Focusmode = () => {
           </button>
         </div>
       )}
+      <div className="navcontainer">
+        <NavLink
+          style={({ isActive }) => ({
+            padding:'1em',
+            background: isActive ? "#1d4ed8" : "transparent",
+            color:isActive ? '#fff' : '#000',
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/dashboard"}
+        >
+          Dashboard
+        </NavLink>
+
+        <NavLink
+          style={({ isActive }) => ({
+            padding:'1em',
+            background: isActive ? "#1d4ed8" : "transparent",
+            color:isActive ? '#fff' : '#000',
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/focusmode"}
+        >
+          Focus
+        </NavLink>
+
+        <NavLink
+          style={({ isActive }) => ({
+            padding:'1em',
+            background: isActive ? "#1d4ed8" : "transparent",
+            color:isActive ? '#fff' : '#000',
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/"}
+        >
+          Insight
+        </NavLink>
+      </div>
     </div>
   );
 };

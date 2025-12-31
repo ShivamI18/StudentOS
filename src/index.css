@@ -1,62 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-*{
-  margin: 0;padding: 0;box-sizing: border-box;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
 }
 
-
-  :root {
+:root {
   /* ===== Brand Colors ===== */
-  --color-primary: #1D4ED8;        /* Deep Blue */
-  --color-primary-hover: #1E3A8A;
-  --color-secondary: #14B8A6;      /* Teal */
-  --color-secondary-hover: #0D9488;
-  --color-accent: #F59E0B;         /* Amber */
+  --color-primary: #1d4ed8; /* Deep Blue */
+  --color-primary-hover: #1e3a8a;
+  --color-secondary: #14b8a6; /* Teal */
+  --color-secondary-hover: #0d9488;
+  --color-accent: #f59e0b; /* Amber */
 
   /* ===== Backgrounds ===== */
-  --bg-main: #F8FAFC;              /* App background */
-  --bg-section: #F1F5F9;           /* Section background */
-  --bg-card: #FFFFFF;              /* Card background */
-  --bg-card-hover: #F8FAFC;
-  --bg-disabled: #E5E7EB;
+  --bg-main: #f8fafc; /* App background */
+  --bg-section: #f1f5f9; /* Section background */
+  --bg-card: #ffffff; /* Card background */
+  --bg-card-hover: #f8fafc;
+  --bg-disabled: #e5e7eb;
 
   /* ===== Text Colors ===== */
-  --text-primary: #1F2933;
+  --text-primary: #1f2933;
   --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --text-disabled: #CBD5E1;
-  --text-inverse: #FFFFFF;
+  --text-muted: #94a3b8;
+
+  --text-disabled: #cbd5e1;
+  --text-inverse: #ffffff;
 
   /* ===== Borders & Dividers ===== */
-  --border-default: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --border-card: #E5E7EB;
-  --border-disabled: #CBD5E1;
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-card: #e5e7eb;
+  --border-disabled: #cbd5e1;
 
   /* ===== States ===== */
-  --state-active: #14B8A6;
-  --state-hover: #1D4ED8;
-  --state-focus: #93C5FD;
-  --state-disabled: #9CA3AF;
+  --state-active: #14b8a6;
+  --state-hover: #1d4ed8;
+  --state-focus: #93c5fd;
+  --state-disabled: #9ca3af;
 
   /* ===== Buttons ===== */
   --btn-primary-bg: var(--color-primary);
   --btn-primary-hover: var(--color-primary-hover);
-  --btn-primary-text: #FFFFFF;
-  --btn-primary-disabled: #93C5FD;
+  --btn-primary-text: #ffffff;
+  --btn-primary-disabled: #93c5fd;
 
   --btn-secondary-bg: var(--color-secondary);
   --btn-secondary-hover: var(--color-secondary-hover);
-  --btn-secondary-text: #FFFFFF;
+  --btn-secondary-text: #ffffff;
 
   /* ===== Shadows ===== */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
 }
 
+a{
+  all: unset;
+}
+.flex-col{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 .monbold {
   font-family: "Montserrat", sans-serif;

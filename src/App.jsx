@@ -20,8 +20,8 @@ function App() {
           Student<span className="monebold">OS</span>
         </div>
         <div className="navbtn">
-          <Link to={"/auth"} className="focus">Sign Up</Link>
-          <Link to={"/auth"}>Log in</Link>
+          <Link to={"/auth"} className="authbtn focus">Sign Up</Link>
+          <Link to={"/auth"} className="authbtn">Log in</Link>
         </div>
       </div>
       <div className="herosection">
@@ -39,7 +39,7 @@ function App() {
           Test is a student productivity app designed to help you manage your
           time, track your focus, and gain insights into your daily habits.
         </div>
-        <div className="herobtn">
+        <div className="authbtn">
           <Link
             style={{
               fontSize: "0.9em",

@@ -1,0 +1,30 @@
+.navcontainer{
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--bg-section);
+    border: 2px solid var(--border-default);
+    width: 100%;
+    padding: 0.5em;
+
+}
+.dashboardcontainer{
+    display: flex;
+    flex-direction: column;
+    padding: 4em 1em;
+    gap: 1.5em;
+}
+.appusage, .navsection{
+    background-color: var(--bg-section);
+    border: 2px solid var(--border-default);
+    box-shadow: var(--shadow-md);
+    border-radius: 1em;
+    padding: 1em;
+}
+.navsection{
+    display: flex;
+    justify-content: space-around;
+    
+}
