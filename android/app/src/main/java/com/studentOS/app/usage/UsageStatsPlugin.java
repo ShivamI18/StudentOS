@@ -4,14 +4,17 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.os.Build;
 
-import com.getcapacitor.JSArray; // Use JSArray for Capacitor
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginMethod; // Required in v8
+import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
 import java.util.Calendar;
@@ -37,59 +40,96 @@ public class UsageStatsPlugin extends Plugin {
     @PluginMethod
     public void getUsageStats(PluginCall call) {
         try {
-            // Get the current date and calculate the start of today (midnight)
+            // Start of today (midnight)
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
-            long startTime = calendar.getTimeInMillis(); // Midnight of today
-            long endTime = System.currentTimeMillis();  // Current time
 
-            // Get the UsageStatsManager service
-            UsageStatsManager usm = (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
+            long startTime = calendar.getTimeInMillis();
+            long endTime = System.currentTimeMillis();
 
-            // Query usage stats for today (from midnight to current time)
+            UsageStatsManager usm =
+                    (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
+
             List<UsageStats> stats = usm.queryUsageStats(
                     UsageStatsManager.INTERVAL_DAILY,
                     startTime,
                     endTime
             );
 
-            // If no usage stats or permission denied, return error
             if (stats == null || stats.isEmpty()) {
                 call.reject("PERMISSION_DENIED_OR_NO_DATA");
                 return;
             }
 
             JSArray dataArray = new JSArray();
+            PackageManager pm = getContext().getPackageManager();
 
             for (UsageStats usage : stats) {
-                // Filter out apps with 0 foreground time to keep the payload small
-                if (usage.getTotalTimeInForeground() > 0) {
-                    JSObject obj = new JSObject();
-                    obj.put("packageName", usage.getPackageName());
+                long totalTimeMs = usage.getTotalTimeInForeground();
 
-                    // Convert total time in foreground (milliseconds) to hours and minutes
-                    long totalTime = usage.getTotalTimeInForeground();
-                    long hours = totalTime / (1000 * 60 * 60); // Convert to hours
-                    long minutes = (totalTime % (1000 * 60 * 60)) / (1000 * 60); // Convert to minutes
+                // ✅ Skip apps with less than 1 minute usage
+                if (totalTimeMs < 60_000) continue;
 
-                    String timeFormatted = String.format("%02d:%02d", hours, minutes);
-                    obj.put("totalTimeForeground", timeFormatted);
+                String packageName = usage.getPackageName();
+                String appName = packageName;
 
-                    dataArray.put(obj);
+                int category = ApplicationInfo.CATEGORY_UNDEFINED;
+                boolean isProductive = true; // default = productive
+
+                try {
+                    ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+
+                    // Resolve app label
+                    appName = pm.getApplicationLabel(ai).toString();
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        category = ai.category;
+                        isProductive = !isNonProductiveCategory(category);
+                    }
+
+                } catch (PackageManager.NameNotFoundException ignored) {
                 }
+
+                // Fallback if appName == packageName
+                if (appName.equals(packageName)) {
+                    String[] parts = packageName.split("\\.");
+                    if (parts.length > 0) {
+                        appName = parts[parts.length - 1];
+                    }
+                }
+
+                // Format time HH:mm
+                long hours = totalTimeMs / (1000 * 60 * 60);
+                long minutes = (totalTimeMs % (1000 * 60 * 60)) / (1000 * 60);
+                String timeFormatted = String.format("%02d:%02d", hours, minutes);
+
+                JSObject obj = new JSObject();
+                obj.put("packageName", packageName);
+                obj.put("appName", appName);
+                obj.put("category", category);
+                obj.put("isProductive", isProductive);
+                obj.put("totalTimeForeground", timeFormatted);
+                obj.put("totalTimeForegroundMs", totalTimeMs);
+
+                dataArray.put(obj);
             }
 
-            // Return the usage stats data
             JSObject result = new JSObject();
             result.put("data", dataArray);
             call.resolve(result);
 
         } catch (Exception e) {
-            Log.e(TAG, "Error", e);
+            Log.e(TAG, "Error getting usage stats", e);
             call.reject(e.getMessage());
         }
+    }
+
+    // ❌ Define non-productive categories (Social & Games)
+    private boolean isNonProductiveCategory(int category) {
+        return category == ApplicationInfo.CATEGORY_SOCIAL
+            || category == ApplicationInfo.CATEGORY_GAME;
     }
 }

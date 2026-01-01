@@ -23,8 +23,16 @@
     border-radius: 1em;
     padding: 1em;
 }
-.navsection{
+.navfeature{
+    background-color: var(--bg-section);
+    border: 2px solid var(--border-strong);
+    height: 10em;
+    border-radius: 1em;
+}
+.navlink{
     display: flex;
     justify-content: space-around;
-    
+    margin: 0 0 0.5em 0;
+    padding: 0.5em 0;
+    border-bottom: 2px solid var(--border-strong);
 }

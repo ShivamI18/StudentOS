@@ -68,6 +68,11 @@ a{
   justify-content: center;
   align-items: center;
 }
+.flex-sa{
+    display: flex;
+    justify-content: space-around;
+    
+}
 
 .monbold {
   font-family: "Montserrat", sans-serif;
