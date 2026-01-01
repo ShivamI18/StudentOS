@@ -9,36 +9,8 @@ import CircularTimer from "../components/CircularTimer";
 const Focusmode = () => {
   const { register, handleSubmit, reset } = useForm();
   const [usageData, setUsageData] = useState([]);
-  const [Analysis, setAnalysis] = useState({
-    analysis:
-      "You studied DSA focusing on arrays for about 0 hours and 25 minutes with a strong self understanding level, and your app usage shows almost no time spent on non productive apps, meaning your focus remained on learning related activities throughout the session, which helped you stay consistent and engaged without major distractions. It was a productive day",
-    notes:
-      "An array is a data structure that stores elements of the same data type in contiguous memory locations, allowing fast access using an index. Arrays are useful for storing lists of values like numbers or strings and are commonly used for iteration, searching, and sorting. Indexing in arrays usually starts from 0, meaning the first element is accessed at index 0. Common operations on arrays include traversal, insertion, deletion, and updating elements, though insertion and deletion can be costly due to shifting elements. Revision question What is an array Answer An array is a collection of elements of the same data type stored in contiguous memory locations. Revision question What does contiguous memory mean Answer It means array elements are stored next to each other in memory. Revision question What is the index of the first element in an array Answer The index of the first element is 0. Revision question Name one common operation on arrays Answer One common operation on arrays is traversal. Revision question Why is insertion costly in arrays Answer Insertion is costly because elements may need to be shifted",
-    questions: [
-      {
-        q: "What best describes an array in data structures A A collection of different data types stored randomly B A collection of same data type elements stored in contiguous memory C A dynamic structure that grows automatically D A structure that stores key value pairs",
-        a: "B A collection of same data type elements stored in contiguous memory",
-      },
-      {
-        q: "What is the index used to access the first element of an array in most programming languages A 1 B 0 C -1 D Depends on data type",
-        a: "B 0",
-      },
-      {
-        q: "Why is insertion in the middle of an array inefficient A Because arrays cannot be resized B Because elements must be shifted to make space C Because arrays do not support insertion D Because memory is not contiguous",
-        a: "B Because elements must be shifted to make space",
-      },
-      {
-        q: "Which of the following is a common use of arrays A Storing hierarchical data B Managing recursive calls C Storing a list of similar items D Implementing graphs only",
-        a: "C Storing a list of similar items",
-      },
-      {
-        q: "Which operation involves visiting each element of the array once A Traversal B Insertion C Deletion D Indexing",
-        a: "A Traversal",
-      },
-    ],
-  });
-  const [openIndex, setOpenIndex] = React.useState(null);
-
+  const [Analysis, setAnalysis] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
   const [seconds, setSeconds] = useState(25 * 60);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
@@ -149,7 +121,7 @@ const Focusmode = () => {
 
   return (
     <div>
-      {!isSessionComplete ? (
+      {isSessionComplete ? (
         <div>
           {!Analysis ? (
             <div
