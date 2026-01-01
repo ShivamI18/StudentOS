@@ -1,10 +1,13 @@
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase.js";
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import UsageStats from "../plugins/usageStats";
 import "./Focusmode.css";
 import CircularTimer from "../components/CircularTimer";
+import { useAuth } from "../context/AuthContext";
 
 const Focusmode = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -14,14 +17,29 @@ const Focusmode = () => {
   const [seconds, setSeconds] = useState(25 * 60);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
-  const [userData, setUserData] = useState({
-    subject: "",
-    topics: "",
-    rating: "",
-    time: "",
-  });
+  const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const [sessionsaved, setSessionsaved] = useState(false)
 
+  const saveSession = async (user) => {
+    const sessionsRef = collection(db, "users", user.uid, "sessions");
+
+    await addDoc(sessionsRef, {
+      userData,
+      usageData,
+      Analysis,
+      createdAt: serverTimestamp(),
+    });
+  };
+
+  useEffect(() => {
+    setAnalysis({})
+                setUsageData([])
+                setUserData({})
+  setIsSessionComplete(false)
+  }, [sessionsaved])
+  
   const fetchStats = async () => {
     setLoading(true);
     try {
@@ -276,6 +294,18 @@ const Focusmode = () => {
                 borderRadius: "8px",
               }}
             >
+              <button
+                onClick={() => {
+                  saveSession(user);
+                  setSessionsaved(true)
+                }}
+                disabled={!sessionsaved}
+              >
+                Save Session
+              </button>
+              <Link onClick={()=>{
+                setSessionsaved(false);
+              }} to={'/focusmode'} >Exit</Link>
               <h2
                 style={{
                   color: "#1d4ed8",
@@ -410,7 +440,7 @@ const Focusmode = () => {
                 Focus Session
               </h2>
               <CircularTimer
-                durationInSeconds={seconds}
+                durationInSeconds={1}
                 setSession={setIsSessionComplete}
                 isSession={isSessionComplete}
               />
@@ -418,6 +448,46 @@ const Focusmode = () => {
           )}
         </div>
       )}
+      <div className="navcontainer">
+        <NavLink
+          style={({ isActive }) => ({
+            padding: "1em",
+            color: isActive ? "#1d4ed8" : "#000",
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/dashboard"}
+        >
+          Dashboard
+        </NavLink>
+
+        <NavLink
+          style={({ isActive }) => ({
+            padding: "1em",
+            color: isActive ? "#1d4ed8" : "#000",
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/focusmode"}
+        >
+          Focus
+        </NavLink>
+
+        <NavLink
+          style={({ isActive }) => ({
+            padding: "1em",
+            color: isActive ? "#1d4ed8" : "#000",
+            borderRadius: "8px",
+            fontSize: "0.7em",
+          })}
+          className="flex-col monthin"
+          to={"/"}
+        >
+          Insight
+        </NavLink>
+      </div>
     </div>
   );
 };
