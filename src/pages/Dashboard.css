@@ -26,8 +26,8 @@
 .navfeature{
     background-color: var(--bg-section);
     border: 2px solid var(--border-strong);
-    height: 10em;
     border-radius: 1em;
+    padding: 1em;
 }
 .navlink{
     display: flex;
@@ -35,4 +35,174 @@
     margin: 0 0 0.5em 0;
     padding: 0.5em 0;
     border-bottom: 2px solid var(--border-strong);
+}
+.sessioncard{
+    border: 2px solid var(--border-default);
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    background-color: var(--bg-section);
+    margin: 1em 0;
+    border-radius: 1em;
+    align-items: center;
+    padding: 1em 0;
+}
+.session-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.session-modal {
+  width: 80vw;
+  height: 80vh;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sessioncard {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sessioncard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.addButton{
+  height: 4em;
+  width: 4em;
+  background-color: var(--bg-section);
+  border-radius: 50%;
+  color: var(--color-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 4em;
+  right: 2em;
+  transition: transform 100ms linear;
+  border: 2px solid var(--border-default);
+}
+.addButton:active{
+  transform: rotate(45deg);
+}
+.form{
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-strong);
+  display: grid;
+  grid-template-rows: repeat(3,1fr);
+  padding:25px 30px ;
+  align-items: center;
+  gap: 25px;
+  border-radius: 15px;
+}
+
+.inputbox, .submitbutton{
+  font-size: 1em;
+  all: unset;
+  background-color: var(--bg-section);
+  padding: 1em;
+  border-radius: 15px;
+  border: 2px solid var(--border-default);
+}
+.hlogo{
+  font-size: 2em;
+  font-weight: 800;
+  text-align: center;
+  position: relative;
+  color: var(--text-primary);
+}
+.habitbox {
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-section);
+  border-radius: 15px;
+  border: 2px solid var(--border-default);
+  gap: 1em;
+}
+
+.habitbox-header {
+  display: flex;
+  gap: 3em;
+  width: 100%;
+}
+
+.habitbox-title {
+  font-size: 1.2em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.habitbox-stats {
+  color: var(--text-primary);
+  font-weight: 200;
+  margin: 0 0 0.5em 0;
+  font-size: 0.75em;
+}
+
+.habitbox-delete {
+  all: unset;
+  padding: 2.5px 5px;
+  border: 1px solid var(--color-primary);
+  border-radius: 5px;
+  height: fit-content;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.habitbox-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.habitbox-day {
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 4px;
+  background-color: var(--bg-disabled);
+  transition: 0.3s;
+}
+
+.habitbox-day.active {
+  background-color: #2ea043;
+}
+
+.habitbox-complete {
+  all: unset;
+  font-size: 1.5em;
+  background-color: var(--bg-card);
+  font-weight: 600;
+  width: 50%;
+  text-align: center;
+  border-radius: 20px;
+  padding: 0.5em 0;
+  cursor: pointer;
+}
+
+.habitbox-complete.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

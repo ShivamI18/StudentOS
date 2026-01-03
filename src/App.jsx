@@ -40,7 +40,7 @@ function App() {
           time, track your focus, and gain insights into your daily habits.
         </div>
         <div className="authbtn">
-          <Link
+          <Link to={'/auth'}
             style={{
               fontSize: "0.9em",
             }}

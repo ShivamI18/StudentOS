@@ -2,7 +2,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.js";
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import UsageStats from "../plugins/usageStats";
 import "./Focusmode.css";
@@ -10,17 +10,18 @@ import CircularTimer from "../components/CircularTimer";
 import { useAuth } from "../context/AuthContext";
 
 const Focusmode = () => {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset,formState:{errors} } = useForm();
   const [usageData, setUsageData] = useState([]);
+  const [userData, setUserData] = useState({});
   const [Analysis, setAnalysis] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
   const [seconds, setSeconds] = useState(25 * 60);
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
-  const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  const [sessionsaved, setSessionsaved] = useState(false)
+  const [sessionsaved, setSessionsaved] = useState(false);
+  const [analysisLoading, setAnalysisLoading] = useState(false)
 
   const saveSession = async (user) => {
     const sessionsRef = collection(db, "users", user.uid, "sessions");
@@ -34,12 +35,10 @@ const Focusmode = () => {
   };
 
   useEffect(() => {
-    setAnalysis({})
-                setUsageData([])
-                setUserData({})
-  setIsSessionComplete(false)
-  }, [sessionsaved])
-  
+    setUsageData([]);
+    setUserData({});
+  }, [sessionsaved]);
+
   const fetchStats = async () => {
     setLoading(true);
     try {
@@ -69,6 +68,7 @@ const Focusmode = () => {
   };
 
   const handleAnalysis = async () => {
+    setAnalysisLoading(true)
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_API_KEY}/api/usage`,
@@ -93,14 +93,16 @@ const Focusmode = () => {
       const res = await resp.json();
       const parsed = await parseAIResponse(res.advice);
       setAnalysis(parsed);
+      console.log("Analysis is saved.");
     } catch (err) {
       console.error(err);
     }
+    setAnalysisLoading(false)
   };
 
   const extractJSON = (raw) => {
     const match = raw.match(/```json([\s\S]*?)```/i);
-    if (!match) throw new Error("No JSON block found");
+    if (!match) return raw;
     return match[1].trim();
   };
 
@@ -116,6 +118,7 @@ const Focusmode = () => {
     try {
       const extracted = extractJSON(raw);
       const sanitized = sanitizeJSON(extracted);
+      console.log(sanitizeJSON);
       return JSON.parse(sanitized);
     } catch (err) {
       console.error("Invalid AI JSON format:", err.message);
@@ -267,6 +270,17 @@ const Focusmode = () => {
                   Wait while we are fetch app usage
                 </div>
               )}
+              {analysisLoading && (
+                <div
+                  style={{
+                    marginTop: "1em",
+                    fontSize: "0.95em",
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  Wait! while we are fetching ai response
+                </div>
+              )}
 
               <button
                 type="button"
@@ -290,22 +304,36 @@ const Focusmode = () => {
             <div
               style={{
                 backgroundColor: "#f8fafc",
-                padding: "16px",
-                borderRadius: "8px",
+                padding: "1em",
               }}
             >
               <button
                 onClick={() => {
                   saveSession(user);
-                  setSessionsaved(true)
+                  setSessionsaved(true);
                 }}
-                disabled={!sessionsaved}
+                disabled={sessionsaved}
+                className="authbtn"
+                style={{
+                  margin:'0 1em 1em 0',
+                }}
               >
                 Save Session
               </button>
-              <Link onClick={()=>{
-                setSessionsaved(false);
-              }} to={'/focusmode'} >Exit</Link>
+              <Link
+                onClick={() => {
+                  setSessionsaved(false);
+                  setIsSessionComplete(false);
+                  setAnalysis(null)
+                }}
+                className="authbtn"
+                style={{
+                  margin:'0 1em 1em 0',
+                }}
+                to={"/dashboard"} // checking navigate it to focusmode
+              >
+                Exit
+              </Link>
               <h2
                 style={{
                   color: "#1d4ed8",
@@ -415,7 +443,7 @@ const Focusmode = () => {
           </button>
 
           {showSetting ? (
-            <form className="timeform" onSubmit={handleSubmit(handleEdit)}>
+            <form className="timeform" noValidate onSubmit={handleSubmit(handleEdit)}>
               <label>Set new Timer (Mins)</label>
               <input
                 type="number"
@@ -423,8 +451,16 @@ const Focusmode = () => {
                 style={{
                   border: "2px solid blue",
                 }}
-                {...register("mins", { required: true })}
+                {...register("mins", { required: true, min:{
+                  value:10,
+                  message:'Timer must be atleast 10 mins long'
+                },
+              max:{
+                   value:120,
+                  message:'Timer cannot be more than 120 mins'
+              } })}
               />
+              {errors.mins && <p>{errors.mins.message}</p> }
               <input
                 type="submit"
                 style={{
@@ -440,7 +476,7 @@ const Focusmode = () => {
                 Focus Session
               </h2>
               <CircularTimer
-                durationInSeconds={1}
+                durationInSeconds={seconds}
                 setSession={setIsSessionComplete}
                 isSession={isSessionComplete}
               />
@@ -449,45 +485,45 @@ const Focusmode = () => {
         </div>
       )}
       <div className="navcontainer">
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/dashboard"}
-        >
-          Dashboard
-        </NavLink>
-
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/focusmode"}
-        >
-          Focus
-        </NavLink>
-
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/"}
-        >
-          Insight
-        </NavLink>
-      </div>
+              <NavLink
+                style={({ isActive }) => ({
+                  padding: "1em",
+                  color: isActive ? "#1d4ed8" : "#000",
+                  borderRadius: "8px",
+                  fontSize: "0.7em",
+                })}
+                className="flex-col monthin"
+                to={"/dashboard"}
+              >
+                Dashboard
+              </NavLink>
+      
+              <NavLink
+                style={({ isActive }) => ({
+                  padding: "1em",
+                  color: isActive ? "#1d4ed8" : "#000",
+                  borderRadius: "8px",
+                  fontSize: "0.7em",
+                })}
+                className="flex-col monthin"
+                to={"/focusmode"}
+              >
+                Focus
+              </NavLink>
+      
+              <NavLink
+                style={({ isActive }) => ({
+                  padding: "1em",
+                  color: isActive ? "#1d4ed8" : "#000",
+                  borderRadius: "8px",
+                  fontSize: "0.7em",
+                })}
+                className="flex-col monthin"
+                to={"/tools"}
+              >
+                Tools
+              </NavLink>
+            </div>
     </div>
   );
 };
