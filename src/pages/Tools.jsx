@@ -1,5 +1,4 @@
 import React from 'react'
-import './Dashboard.css'
 import { useState, useEffect } from "react";
 import {
   addHabitDB,
@@ -59,130 +58,198 @@ const Tools = () => {
     reset();
   };
   return (
-    <div>
-      <div style={{
-    filter:'drop-shadow(0px 0px 10px 10px rgba(255, 255, 255, 1))'
-    }}>
-      <h2 className="monebold" style={{ margin: "1em 0 0 1em" }}>H-Tacker</h2>
-      {addHabit ? (
-        <div
+    <div
+  style={{
+    minHeight: "100vh",
+    backgroundColor: "#ECEFF4",
+    paddingBottom: "10vh",
+  }}
+>
+  {/* Header */}
+  <h2
+    style={{
+      padding: "6vh 5vw 2vh",
+      fontSize: "1.6rem",
+      fontWeight: 600,
+      color: "#2E3440",
+      maxWidth: "60rem",
+      margin: "0 auto",
+    }}
+  >
+    H-Tracker
+  </h2>
+
+  {/* Content */}
+  <div
+    style={{
+      maxWidth: "60rem",
+      margin: "0 auto",
+      padding: "0 5vw",
+    }}
+  >
+    {addHabit ? (
+      /* Add Habit Overlay */
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(236,239,244,0.85)",
+          backdropFilter: "blur(6px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+      >
+        <form
+          onSubmit={handleSubmit(handleHabitSubmit)}
           style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
+            width: "90%",
+            maxWidth: "22rem",
+            backgroundColor: "#ECEFF4",
+            padding: "2rem",
+            borderRadius: "1.5rem",
+            boxShadow:
+              "0.6rem 0.6rem 1.2rem #D1D9E6, -0.6rem -0.6rem 1.2rem #FFFFFF",
             display: "flex",
-            justifyContent: "center",
-            flexDirection:"column",
-            alignItems: "center",
+            flexDirection: "column",
+            gap: "1.2rem",
           }}
         >
-          <form onSubmit={handleSubmit(handleHabitSubmit)} className="form">
-            <div style={{
-              fontSize:"1.5em",
-              fontWeight:"900",
-              margin:"0  0.4em",
-            }}>Add Habit</div>
-            <div className="centre">
-              <input
-              className="inputbox"
-                type="text"
-                placeholder="Habit Name"
-                {...register("habitName", { required: true })}
-                style={{
-                  border: errors.habitName
-                    ? "1px solid red"
-                    : "1px solid transparent",
-                }}
-                autoFocus
-              />
-            </div>
-            <div className="centre">
-              <button type="submit"
-              style={{
-                backgroundColor:"white",
-                color:"rgb(41,41,41)",
-                fontWeight:"600"
-              }}
-              className="submitbutton"
-              >Submit</button>
-            </div>
-          </form>
-        </div>
-      ) : (
-        <div
-        style={{
-          display:"flex",
-          flexWrap:"wrap",
-          gap:'1em',
-          padding:"2em"
-        }}
-        >
-          {habits.map((itm) => {
-            return (
-              <div>
-                <Habitbox
-                habit={itm}
-                key={itm.id}
-                onDelete={() => deleteHabit(itm.id)}
-              />
-              </div>
-            );
-          })}
-        </div>
-      )}
+          <div
+            style={{
+              textAlign: "center",
+              fontSize: "1.3rem",
+              fontWeight: 600,
+              color: "#2E3440",
+            }}
+          >
+            Add Habit
+          </div>
+
+          <input
+            type="text"
+            placeholder="Habit Name"
+            {...register("habitName", { required: true })}
+            autoFocus
+            style={{
+              padding: "0.9rem 1rem",
+              fontSize: "0.9rem",
+              borderRadius: "1rem",
+              border: "none",
+              outline: "none",
+              backgroundColor: "#ECEFF4",
+              color: "#2E3440",
+              boxShadow: errors.habitName
+                ? "inset 0 0 0 1px #BF616A"
+                : "inset 0.3rem 0.3rem 0.6rem #D1D9E6, inset -0.3rem -0.3rem 0.6rem #FFFFFF",
+            }}
+          />
+
+          <button
+            type="submit"
+            style={{
+              padding: "0.8rem",
+              borderRadius: "1rem",
+              border: "none",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              backgroundColor: "#ECEFF4",
+              color: "#5E81AC",
+              boxShadow:
+                "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
+              cursor: "pointer",
+            }}
+          >
+            Save Habit
+          </button>
+        </form>
+      </div>
+    ) : (
+      /* Habit List */
       <div
-        className="addButton"
-        onClick={() => {
-          setAddHabit(!addHabit);
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "1.2rem",
+          paddingBottom: "2rem",
         }}
-        style={{ transform: `rotate(${addHabit ? "45deg" : "0deg"})` }}
       >
-        <div style={{ fontSize: "3em", position: "relative", top: "-4px" }}>
-          +
-        </div>
+        {habits.map((itm) => (
+          <div key={itm.id}>
+            {/* Imported component untouched */}
+            <Habitbox
+              habit={itm}
+              onDelete={() => deleteHabit(itm.id)}
+            />
+          </div>
+        ))}
       </div>
-    </div>
-      <div className="navcontainer">
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/dashboard"}
-        >
-          Dashboard
-        </NavLink>
+    )}
+  </div>
 
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/focusmode"}
-        >
-          Focus
-        </NavLink>
+  {/* Floating Add Button */}
+  <div
+    onClick={() => setAddHabit(!addHabit)}
+    style={{
+      position: "fixed",
+      bottom: "10vh",
+      right: "6vw",
+      width: "3.5rem",
+      height: "3.5rem",
+      borderRadius: "50%",
+      backgroundColor: "#ECEFF4",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "2.2rem",
+      color: "#5E81AC",
+      cursor: "pointer",
+      transform: `rotate(${addHabit ? "45deg" : "0deg"})`,
+      transition: "transform 0.3s ease",
+      boxShadow:
+        "0.5rem 0.5rem 1rem #D1D9E6, -0.5rem -0.5rem 1rem #FFFFFF",
+    }}
+  >
+    +
+  </div>
 
-        <NavLink
-          style={({ isActive }) => ({
-            padding: "1em",
-            color: isActive ? "#1d4ed8" : "#000",
-            borderRadius: "8px",
-            fontSize: "0.7em",
-          })}
-          className="flex-col monthin"
-          to={"/tools"}
-        >
-          Tools
-        </NavLink>
-      </div>
-    </div>
+  {/* Bottom Nav */}
+  <div
+    style={{
+      position: "fixed",
+      bottom: 0,
+      width: "100%",
+      height: "8vh",
+      display: "flex",
+      justifyContent: "space-around",
+      alignItems: "center",
+      backgroundColor: "#ECEFF4",
+      boxShadow:
+        "0 -0.4rem 0.8rem #D1D9E6, 0 0.4rem 0.8rem #FFFFFF",
+    }}
+  >
+    {[
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Focus", path: "/focusmode" },
+      { label: "Tools", path: "/tools" },
+    ].map((item) => (
+      <NavLink
+        key={item.path}
+        to={item.path}
+        style={({ isActive }) => ({
+          fontSize: "0.75rem",
+          color: isActive ? "#5E81AC" : "#4C566A",
+          textDecoration: "none",
+        })}
+      >
+        {item.label}
+      </NavLink>
+    ))}
+  </div>
+</div>
+
+
   )
 }
 

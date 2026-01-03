@@ -5,12 +5,16 @@ import { Link, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import UsageStats from "../plugins/usageStats";
-import "./Focusmode.css";
-import CircularTimer from "../components/CircularTimer";
+import TreeGrowthTimer from "../components/TreeGrowthTimer.jsx";
 import { useAuth } from "../context/AuthContext";
 
 const Focusmode = () => {
-  const { register, handleSubmit, reset,formState:{errors} } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const [usageData, setUsageData] = useState([]);
   const [userData, setUserData] = useState({});
   const [Analysis, setAnalysis] = useState(null);
@@ -21,7 +25,7 @@ const Focusmode = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const [sessionsaved, setSessionsaved] = useState(false);
-  const [analysisLoading, setAnalysisLoading] = useState(false)
+  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   const saveSession = async (user) => {
     const sessionsRef = collection(db, "users", user.uid, "sessions");
@@ -68,7 +72,7 @@ const Focusmode = () => {
   };
 
   const handleAnalysis = async () => {
-    setAnalysisLoading(true)
+    setAnalysisLoading(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_API_KEY}/api/usage`,
@@ -97,7 +101,7 @@ const Focusmode = () => {
     } catch (err) {
       console.error(err);
     }
-    setAnalysisLoading(false)
+    setAnalysisLoading(false);
   };
 
   const extractJSON = (raw) => {
@@ -141,389 +145,334 @@ const Focusmode = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#ECEFF4",
+        paddingBottom: "10vh",
+      }}
+    >
+      {" "}
       {isSessionComplete ? (
         <div>
+          {" "}
           {!Analysis ? (
             <div
               style={{
-                margin: "1em",
+                padding: "6vh 5vw 2vh",
+                maxWidth: "50rem",
+                margin: "0 auto",
               }}
             >
+              {" "}
               <form
                 onSubmit={handleSubmit(onsubmit)}
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "1em",
-                  padding: "1.5em",
-                  backgroundColor: "var(--bg-card)",
-                  border: "1px solid var(--border-card)",
-                  borderRadius: "0.75em",
-                  boxShadow: "var(--shadow-sm)",
-                  maxWidth: "100%",
+                  gap: "1rem",
+                  padding: "2rem",
+                  backgroundColor: "#ECEFF4",
+                  borderRadius: "1.5rem",
+                  boxShadow:
+                    "0.6rem 0.6rem 1.2rem #D1D9E6, -0.6rem -0.6rem 1.2rem #FFFFFF",
                 }}
               >
+                {" "}
                 <label
-                  htmlFor="subject"
                   style={{
-                    fontSize: "1em",
-                    color: "var(--text-primary)",
-                    fontWeight: "500",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "#2E3440",
                   }}
                 >
-                  Subject:
-                </label>
+                  {" "}
+                  Subject{" "}
+                </label>{" "}
                 <input
                   type="text"
                   defaultValue="DSA"
-                  id="subject"
                   {...register("subject", { required: true })}
                   style={{
-                    padding: "0.75em 1em",
-                    fontSize: "1em",
-                    borderRadius: "0.5em",
-                    border: "1px solid var(--border-default)",
-                    color: "var(--text-primary)",
-                    backgroundColor: "var(--bg-main)",
+                    padding: "0.8rem 1rem",
+                    borderRadius: "1rem",
+                    border: "none",
+                    backgroundColor: "#ECEFF4",
+                    fontSize: "0.9rem",
+                    boxShadow:
+                      "inset 0.3rem 0.3rem 0.6rem #D1D9E6, inset -0.3rem -0.3rem 0.6rem #FFFFFF",
                   }}
-                />
-
+                />{" "}
                 <label
-                  htmlFor="topics"
                   style={{
-                    fontSize: "1em",
-                    color: "var(--text-primary)",
-                    fontWeight: "500",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "#2E3440",
                   }}
                 >
-                  Topics Studied:
-                </label>
+                  {" "}
+                  Topics Studied{" "}
+                </label>{" "}
                 <input
                   type="text"
                   defaultValue="Array and List"
-                  id="topics"
                   {...register("topics", { required: true })}
                   style={{
-                    padding: "0.75em 1em",
-                    fontSize: "1em",
-                    borderRadius: "0.5em",
-                    border: "1px solid var(--border-default)",
-                    color: "var(--text-primary)",
-                    backgroundColor: "var(--bg-main)",
+                    padding: "0.8rem 1rem",
+                    borderRadius: "1rem",
+                    border: "none",
+                    backgroundColor: "#ECEFF4",
+                    fontSize: "0.9rem",
+                    boxShadow:
+                      "inset 0.3rem 0.3rem 0.6rem #D1D9E6, inset -0.3rem -0.3rem 0.6rem #FFFFFF",
                   }}
-                />
-
+                />{" "}
                 <label
-                  htmlFor="rating"
                   style={{
-                    fontSize: "1em",
-                    color: "var(--text-primary)",
-                    fontWeight: "500",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "#2E3440",
                   }}
                 >
-                  Rating:
-                </label>
+                  {" "}
+                  Rating{" "}
+                </label>{" "}
                 <input
                   type="text"
                   defaultValue="4"
-                  id="rating"
                   {...register("rating", { required: true })}
                   style={{
-                    padding: "0.75em 1em",
-                    fontSize: "1em",
-                    borderRadius: "0.5em",
-                    border: "1px solid var(--border-default)",
-                    color: "var(--text-primary)",
-                    backgroundColor: "var(--bg-main)",
+                    padding: "0.8rem 1rem",
+                    borderRadius: "1rem",
+                    border: "none",
+                    backgroundColor: "#ECEFF4",
+                    fontSize: "0.9rem",
+                    boxShadow:
+                      "inset 0.3rem 0.3rem 0.6rem #D1D9E6, inset -0.3rem -0.3rem 0.6rem #FFFFFF",
                   }}
-                />
-
+                />{" "}
                 <input
                   type="submit"
                   disabled={loading}
                   value="Save"
                   style={{
-                    marginTop: "1em",
-                    padding: "0.8em",
-                    fontSize: "1em",
-                    fontWeight: "600",
-                    borderRadius: "0.6em",
+                    marginTop: "1.2rem",
+                    padding: "0.9rem",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    borderRadius: "1.2rem",
                     border: "none",
-                    backgroundColor: loading
-                      ? "var(--btn-primary-disabled)"
-                      : "var(--btn-primary-bg)",
-                    color: "var(--btn-primary-text)",
-                    cursor: loading ? "not-allowed" : "pointer",
+                    backgroundColor: "#ECEFF4",
+                    color: "#5E81AC",
+                    boxShadow:
+                      "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
+                    cursor: "pointer",
                   }}
-                />
-              </form>
-
+                />{" "}
+              </form>{" "}
               {loading && (
                 <div
                   style={{
-                    marginTop: "1em",
-                    fontSize: "0.95em",
-                    color: "var(--text-secondary)",
+                    marginTop: "1rem",
+                    color: "#4C566A",
+                    fontSize: "0.8rem",
                   }}
                 >
-                  Wait while we are fetch app usage
+                  {" "}
+                  Fetching app usage…{" "}
                 </div>
-              )}
+              )}{" "}
               {analysisLoading && (
                 <div
                   style={{
-                    marginTop: "1em",
-                    fontSize: "0.95em",
-                    color: "var(--text-secondary)",
+                    marginTop: "1rem",
+                    color: "#4C566A",
+                    fontSize: "0.8rem",
                   }}
                 >
-                  Wait! while we are fetching ai response
+                  {" "}
+                  Generating AI insights…{" "}
                 </div>
-              )}
-
+              )}{" "}
               <button
-                type="button"
                 onClick={handleAnalysis}
                 style={{
-                  marginTop: "1.5em",
-                  padding: "0.8em 1.2em",
-                  fontSize: "1em",
-                  fontWeight: "600",
-                  borderRadius: "0.6em",
+                  marginTop: "2rem",
+                  padding: "0.9rem",
+                  width: "100%",
+                  borderRadius: "1.2rem",
                   border: "none",
-                  backgroundColor: "var(--btn-secondary-bg)",
-                  color: "var(--btn-secondary-text)",
-                  cursor: "pointer",
+                  backgroundColor: "#ECEFF4",
+                  color: "#5E81AC",
+                  fontWeight: 600,
+                  boxShadow:
+                    "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
                 }}
               >
-                Analysis
-              </button>
+                {" "}
+                Analysis{" "}
+              </button>{" "}
             </div>
           ) : (
             <div
               style={{
-                backgroundColor: "#f8fafc",
-                padding: "1em",
+                padding: "6vh 5vw 2vh",
+                maxWidth: "50rem",
+                margin: "0 auto",
               }}
             >
+              {" "}
               <button
                 onClick={() => {
                   saveSession(user);
                   setSessionsaved(true);
                 }}
                 disabled={sessionsaved}
-                className="authbtn"
                 style={{
-                  margin:'0 1em 1em 0',
+                  marginRight: "1rem",
+                  padding: "0.7rem 1.2rem",
+                  borderRadius: "1rem",
+                  border: "none",
+                  backgroundColor: "#ECEFF4",
+                  color: "#5E81AC",
+                  boxShadow:
+                    "0.3rem 0.3rem 0.6rem #D1D9E6, -0.3rem -0.3rem 0.6rem #FFFFFF",
                 }}
               >
-                Save Session
-              </button>
+                {" "}
+                Save Session{" "}
+              </button>{" "}
               <Link
+                to="/dashboard"
                 onClick={() => {
                   setSessionsaved(false);
                   setIsSessionComplete(false);
-                  setAnalysis(null)
+                  setAnalysis(null);
                 }}
-                className="authbtn"
                 style={{
-                  margin:'0 1em 1em 0',
-                }}
-                to={"/dashboard"} // checking navigate it to focusmode
-              >
-                Exit
-              </Link>
-              <h2
-                style={{
-                  color: "#1d4ed8",
-                  borderBottom: "1px solid #e2e8f0",
-                  paddingBottom: "4px",
+                  padding: "0.7rem 1.2rem",
+                  borderRadius: "1rem",
+                  backgroundColor: "#ECEFF4",
+                  color: "#4C566A",
+                  textDecoration: "none",
+                  boxShadow:
+                    "0.3rem 0.3rem 0.6rem #D1D9E6, -0.3rem -0.3rem 0.6rem #FFFFFF",
                 }}
               >
+                {" "}
+                Exit{" "}
+              </Link>{" "}
+              <h2 style={{ marginTop: "2rem", color: "#2E3440" }}>
                 Analysis
-              </h2>
-              <div style={{ color: "#1f2933", marginTop: "8px" }}>
+              </h2>{" "}
+              <p style={{ color: "#4C566A", fontSize: "0.9rem" }}>
                 {Analysis.analysis}
-              </div>
-
-              <h2
-                style={{
-                  color: "#1d4ed8",
-                  borderBottom: "1px solid #e2e8f0",
-                  paddingBottom: "4px",
-                  marginTop: "20px",
-                }}
-              >
-                Notes
-              </h2>
-              <div style={{ color: "#1f2933", marginTop: "8px" }}>
+              </p>{" "}
+              <h2 style={{ marginTop: "1.5rem", color: "#2E3440" }}>Notes</h2>{" "}
+              <p style={{ color: "#4C566A", fontSize: "0.9rem" }}>
                 {Analysis.notes}
-              </div>
-
-              <h2
-                style={{
-                  color: "#1d4ed8",
-                  borderBottom: "1px solid #e2e8f0",
-                  paddingBottom: "4px",
-                  marginTop: "20px",
-                }}
-              >
+              </p>{" "}
+              <h2 style={{ marginTop: "1.5rem", color: "#2E3440" }}>
                 Questions
-              </h2>
-
+              </h2>{" "}
               {Analysis.questions?.map((q, i) => (
                 <div
                   key={i}
                   style={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
-                    padding: "12px",
-                    marginTop: "10px",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                    marginTop: "1rem",
+                    padding: "1.2rem",
+                    backgroundColor: "#ECEFF4",
+                    borderRadius: "1.2rem",
+                    boxShadow:
+                      "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
                   }}
                 >
+                  {" "}
                   <div
                     onClick={() => setOpenIndex(openIndex === i ? null : i)}
                     style={{
+                      fontWeight: 600,
+                      color: "#5E81AC",
                       cursor: "pointer",
-                      fontWeight: "600",
-                      color: "#1d4ed8",
+                      fontSize: "0.85rem",
                     }}
                   >
-                    Question {i + 1}: {q.q}
-                  </div>
-
+                    {" "}
+                    Question {i + 1}: {q.q}{" "}
+                  </div>{" "}
                   {openIndex === i && (
                     <div
                       style={{
-                        marginTop: "8px",
-                        color: "#475569",
+                        marginTop: "0.6rem",
+                        color: "#4C566A",
+                        fontSize: "0.85rem",
                       }}
                     >
-                      <strong style={{ color: "#14b8a6" }}>Answer:</strong>{" "}
-                      {q.a}
+                      {" "}
+                      <strong>Answer:</strong> {q.a}{" "}
                     </div>
-                  )}
+                  )}{" "}
                 </div>
-              ))}
+              ))}{" "}
             </div>
-          )}
+          )}{" "}
         </div>
       ) : (
         <div>
-          <button
-            className="setting"
-            onClick={() => setShowSetting(!showSetting)}
+          {" "}
+          <h2
+            style={{
+              margin: "0vh 5vw 2vh",
+              fontWeight: 600,
+              fontSize: "1.4rem",
+              color: "#2E3440",
+              padding: "1.5vh 0 0 0",
+            }}
           >
-            {showSetting ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#fff"
-              >
-                {" "}
-                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />{" "}
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="#fff"
-              >
-                {" "}
-                <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z" />{" "}
-              </svg>
-            )}
-          </button>
-
-          {showSetting ? (
-            <form className="timeform" noValidate onSubmit={handleSubmit(handleEdit)}>
-              <label>Set new Timer (Mins)</label>
-              <input
-                type="number"
-                className="forminput"
-                style={{
-                  border: "2px solid blue",
-                }}
-                {...register("mins", { required: true, min:{
-                  value:10,
-                  message:'Timer must be atleast 10 mins long'
-                },
-              max:{
-                   value:120,
-                  message:'Timer cannot be more than 120 mins'
-              } })}
-              />
-              {errors.mins && <p>{errors.mins.message}</p> }
-              <input
-                type="submit"
-                style={{
-                  fontSize: "1em",
-                }}
-                className="authbtn"
-                value="Save"
-              />
-            </form>
-          ) : (
-            <div>
-              <h2 className="monebold" style={{ margin: "1em 0 0 1em" }}>
-                Focus Session
-              </h2>
-              <CircularTimer
-                durationInSeconds={seconds}
-                setSession={setIsSessionComplete}
-                isSession={isSessionComplete}
-              />
-            </div>
-          )}
+            {" "}
+            Focus Session{" "}
+          </h2>{" "}
+          <TreeGrowthTimer
+            durationInSeconds={seconds}
+            setSession={setIsSessionComplete}
+            isSession={isSessionComplete}
+          />{" "}
         </div>
-      )}
-      <div className="navcontainer">
-              <NavLink
-                style={({ isActive }) => ({
-                  padding: "1em",
-                  color: isActive ? "#1d4ed8" : "#000",
-                  borderRadius: "8px",
-                  fontSize: "0.7em",
-                })}
-                className="flex-col monthin"
-                to={"/dashboard"}
-              >
-                Dashboard
-              </NavLink>
-      
-              <NavLink
-                style={({ isActive }) => ({
-                  padding: "1em",
-                  color: isActive ? "#1d4ed8" : "#000",
-                  borderRadius: "8px",
-                  fontSize: "0.7em",
-                })}
-                className="flex-col monthin"
-                to={"/focusmode"}
-              >
-                Focus
-              </NavLink>
-      
-              <NavLink
-                style={({ isActive }) => ({
-                  padding: "1em",
-                  color: isActive ? "#1d4ed8" : "#000",
-                  borderRadius: "8px",
-                  fontSize: "0.7em",
-                })}
-                className="flex-col monthin"
-                to={"/tools"}
-              >
-                Tools
-              </NavLink>
-            </div>
+      )}{" "}
+      {/* Bottom Nav */}{" "}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          height: "8vh",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          backgroundColor: "#ECEFF4",
+          boxShadow: "0 -0.4rem 0.8rem #D1D9E6, 0 0.4rem 0.8rem #FFFFFF",
+        }}
+      >
+        {" "}
+        {[
+          { label: "Dashboard", path: "/dashboard" },
+          { label: "Focus", path: "/focusmode" },
+          { label: "Tools", path: "/tools" },
+        ].map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            style={({ isActive }) => ({
+              fontSize: "0.75rem",
+              color: isActive ? "#5E81AC" : "#4C566A",
+              textDecoration: "none",
+            })}
+          >
+            {" "}
+            {item.label}{" "}
+          </NavLink>
+        ))}{" "}
+      </div>{" "}
     </div>
   );
 };
