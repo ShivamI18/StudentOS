@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 function GoogleAuth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -63,6 +64,17 @@ function GoogleAuth() {
     color: "#1F2937",
   }}
 >
+  <Link to={'/'} style={{
+        background: "none",
+        border: "none",
+        fontSize: "0.85rem",
+        fontWeight:'900',
+        cursor: "pointer",
+        textAlign:'center',
+        position:'absolute',
+        top:'0',left:'0',
+        margin:'2em',
+      }}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563EB"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></Link>
   {/* Logo */}
   <div
     style={{
