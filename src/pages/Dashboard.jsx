@@ -69,7 +69,7 @@ const Dashboard = () => {
 
     hours = hours % 12 || 12; // convert 0 → 12
 
-    setTime(`${hours}:${minutes}${ampm}`);
+    setApprefreshtime(`${hours}:${minutes}${ampm}`);
   };
 
   function formatSessionDate(timestamp) {

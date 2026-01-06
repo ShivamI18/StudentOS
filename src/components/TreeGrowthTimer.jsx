@@ -75,41 +75,102 @@ const TreeGrowthTimer = ({ durationInSeconds = 1500, setSession }) => {
           }
         `}
       </style>
+{/* tree animation */}
 
-      {/* Tree Illustration Container */}
-      <div style={{ margin: "0 auto", width: "220px", height: "220px", display: "flex", alignItems: "flex-end", justifyContent: "center", position: "relative" }}>
-        <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%", overflow: 'visible' }}>
-          <ellipse cx="50" cy="95" rx="25" ry="5" fill="rgba(255, 183, 197, 0.08)" />
-          
-          <path
-            className="tree-path"
-            d={`M50,95 Q${60 - (growthProgress * 5)},${95 - (growthProgress * 20)} 50,50`}
-            stroke="#5D4037"
-            strokeWidth={3 + (growthProgress * 2)}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray="60"
-            strokeDashoffset={60 - (growthProgress * 60)}
-          />
 
-          <g style={{ animation: running ? "sway 5s infinite ease-in-out" : "none", transformOrigin: "50px 95px" }}>
-            <path className="tree-path" d="M50,65 Q35,55 25,45" stroke="#5D4037" strokeWidth={1.5 + (growthProgress * 1)} fill="none" strokeLinecap="round" strokeDasharray="40" strokeDashoffset={40 - (Math.max(0, growthProgress - 0.2) * 1.25 * 40)} />
-            <path className="tree-path" d="M50,60 Q65,50 75,35" stroke="#5D4037" strokeWidth={1.5 + (growthProgress * 0.8)} fill="none" strokeLinecap="round" strokeDasharray="50" strokeDashoffset={50 - (Math.max(0, growthProgress - 0.3) * 1.4 * 50)} />
-            <path className="tree-path" d="M50,50 Q45,35 52,20" stroke="#5D4037" strokeWidth={1 + (growthProgress * 0.8)} fill="none" strokeLinecap="round" strokeDasharray="40" strokeDashoffset={40 - (Math.max(0, growthProgress - 0.4) * 1.6 * 40)} />
-            
-            <g style={{ transition: 'all 1.8s ease', transform: `scale(${growthProgress > 0.3 ? 1 : 0})`, transformOrigin: "50px 60px", opacity: growthProgress > 0.3 ? 1 : 0 }}>
-              <g transform="translate(25, 45)"><circle r="8" fill="#FFB7C5" opacity="0.8" /><circle cx="-4" cy="-3" r="6" fill="#FFC0CB" opacity="0.6" /></g>
-              <g transform="translate(75, 35)"><circle r="10" fill="#FFC0CB" opacity="0.8" /><circle cx="5" cy="-4" r="7" fill="#FFB7C5" opacity="0.6" /></g>
-              <g transform="translate(52, 20)"><circle r="12" fill="#FFD1DC" opacity="0.9" /><circle cx="-6" cy="-2" r="8" fill="#FFB7C5" opacity="0.7" /></g>
-            </g>
+<div style={{ margin: "0 auto", width: "220px", height: "220px", display: "flex", alignItems: "flex-end", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+  <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%", overflow: 'visible' }}>
+    <ellipse cx="50" cy="95" rx="25" ry="5" fill="rgba(255, 183, 197, 0.08)" />
+    
+    {/* TRUNK */}
+    <path
+      d={`M46,95 L54,95 L52,45 L48,45 Z`}
+      fill="#5D4037"
+      style={{ 
+        transition: 'opacity 0.5s ease',
+        opacity: growthProgress > 0 ? 1 : 0,
+        transformOrigin: "50px 95px",
+        transform: `scaleY(${Math.min(1, growthProgress / 0.25)})`
+      }}
+    />
+
+    <g>
+      {/* TAPERED BRANCHES: Wider at start point (trunk), narrow at end point */}
+      {/* Low Left - Base width 2.5, Tip width 0.5 */}
+      <path d="M49.5,74 L50,77 L24,61 L25,60 Z" fill="#5D4037" style={{ transformOrigin: "50px 75px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.3) / 0.25))})` }} />
+      
+      {/* Low Right - Base width 2.5, Tip width 0.5 */}
+      <path d="M50,72 L50.5,69 L76,56 L75,55 Z" fill="#5D4037" style={{ transformOrigin: "50px 70px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.4) / 0.25))})` }} />
+      
+      {/* Mid Left - Base width 2, Tip width 0.5 */}
+      <path d="M49.5,61 L50.5,63 L19,46 L20,45 Z" fill="#5D4037" style={{ transformOrigin: "50px 62px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.5) / 0.25))})` }} />
+      
+      {/* Mid Right - Base width 2, Tip width 0.5 */}
+      <path d="M49.5,54 L50.5,56 L81,36 L80,35 Z" fill="#5D4037" style={{ transformOrigin: "50px 55px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.6) / 0.2))})` }} />
+      
+      {/* Top Left High - Base width 1.5, Tip width 0.4 */}
+      <path d="M50,47 L51,49 L34,29 L35,28 Z" fill="#5D4037" style={{ transformOrigin: "50px 48px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.65) / 0.2))})` }} />
+      
+      {/* Top Vertical - Base width 1.5, Tip width 0.4 */}
+      <path d="M49.3,45 L50.7,45 L50.4,12 L49.6,12 Z" fill="#5D4037" style={{ transformOrigin: "50px 45px", transition: 'transform 0.6s ease-out', transform: `scale(${Math.max(0, Math.min(1, (growthProgress - 0.7) / 0.15))})` }} />
+      
+      {/* CLUSTERS (same as before) */}
+      {(() => {
+        const colors = ["#FFB7C5", "#FFC0CB", "#FFD1DC"];
+        const clusters = [
+          {x: 24.5, y: 60.5, r: 8, d: 0.1}, {x: 37, y: 68, r: 6, d: 0.05},
+          {x: 75.5, y: 55.5, r: 8, d: 0.2}, {x: 62, y: 63, r: 6, d: 0.15},
+          {x: 19.5, y: 45.5, r: 9, d: 0.3}, {x: 35, y: 53, r: 6, d: 0.25}, {x: 45, y: 58, r: 5, d: 0.2},
+          {x: 80.5, y: 35.5, r: 9, d: 0.4}, {x: 65, y: 45, r: 7, d: 0.35}, {x: 55, y: 52, r: 5, d: 0.3},
+          {x: 34.5, y: 28.5, r: 9, d: 0.45},
+          {x: 51, y: 12, r: 10, d: 0.5}, {x: 50.5, y: 25, r: 8, d: 0.45}, {x: 50, y: 38, r: 7, d: 0.4}
+        ];
+
+        return (
+          <g style={{ opacity: growthProgress > 0.5 ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+            {clusters.map((pos, i) => {
+              const individualScale = Math.max(0, (growthProgress - (0.6 + (pos.d * 0.3))) / (1 - (0.6 + (pos.d * 0.3))));
+              return ( individualScale > 0 &&
+                <g key={i} transform={`translate(${pos.x}, ${pos.y})`}>
+                  <circle r={pos.r * individualScale} fill={colors[i % 3]} opacity="0.8" />
+                  <circle cx={-pos.r/4} cy={-pos.r/4} r={pos.r * 0.6 * individualScale} fill={colors[(i+1)%3]} opacity="0.6" />
+                </g>
+              );
+            })}
           </g>
-        </svg>
+        );
+      })()}
+    </g>
+  </svg>
 
-        {/* Floating Petals */}
-        {(running || timerCompleted) && growthProgress > 0.4 && [1, 2, 3, 4, 5].map((i) => (
-          <div key={i} style={{ position: "absolute", top: "30%", left: `${15 + i * 15}%`, width: "8px", height: "10px", background: "#FFB7C5", borderRadius: "80% 10% 80% 50%", animation: `petalFloat ${4 + i}s infinite linear`, animationDelay: `${i * 0.5}s`, opacity: 0 }} />
-        ))}
-      </div>
+  {/* Floating Petals (as previously optimized) */}
+  {(running || timerCompleted) && growthProgress > 0.8 && Array.from({ length: 8 }).map((_, i) => (
+    <div 
+      key={i} 
+      style={{ 
+        position: "absolute", 
+        top: "20%", 
+        left: `${10 + i * 12}%`, 
+        width: "8px", 
+        height: "10px", 
+        background: "#FFB7C5", 
+        borderRadius: "80% 10% 80% 50%", 
+        animation: `petalFloat ${5 + i}s infinite linear`, 
+        animationDelay: `${i * 0.7}s`, 
+        opacity: 0 
+      }} 
+    />
+  ))}
+
+  <style>{`
+    @keyframes petalFloat {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(170px) translateX(25px) rotate(450deg); opacity: 0; }
+    }
+  `}</style>
+</div>
 
       <div style={{ marginTop: "1.5rem", fontSize: "3.5rem", fontWeight: 800, color: "#2D3436", letterSpacing: "-0.05em" }}>
         {formatTime(timeLeft)}

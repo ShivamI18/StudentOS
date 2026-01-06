@@ -473,7 +473,6 @@ const Focusmode = () => {
                   }}
                 >
                   <span style={{ flex: 1 }}>Q{i + 1}: {q.q}</span>
-                  <span style={{ fontSize: "1.2rem", marginLeft: "0.5rem", opacity: 0.5 }}>{openIndex === i ? "−" : "+"}</span>
                 </div>
                 {openIndex === i && (
                   <div

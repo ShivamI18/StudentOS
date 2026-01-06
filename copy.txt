@@ -158,3 +158,112 @@ function App() {
 }
 
 export default App;
+
+
+
+animation - <div style={{ margin: "0 auto", width: "220px", height: "220px", display: "flex", alignItems: "flex-end", justifyContent: "center", position: "relative" }}>
+  <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%", overflow: 'visible' }}>
+    <ellipse cx="50" cy="95" rx="25" ry="5" fill="rgba(255, 183, 197, 0.08)" />
+    
+    {/* TRUNK */}
+    <path
+      d={`M50,95 Q${58 - (growthProgress * 5)},${95 - (growthProgress * 20)} 50,50`}
+      stroke="#5D4037"
+      strokeWidth={3 + (growthProgress * 2)}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray="60"
+      strokeDashoffset={60 - (growthProgress < 0.3 
+        ? (growthProgress / 0.3) * 59.5 
+        : 59.5 + ((growthProgress - 0.3) / 0.7) * 0.5)}
+    />
+
+    <g>
+      {/* BRANCH 1 */}
+      <path 
+        d="M50,65 Q35,55 25,45" 
+        stroke="#5D4037" 
+        strokeWidth={1.5 + (growthProgress * 1)} 
+        fill="none" 
+        strokeLinecap="round" 
+        strokeDasharray="40" 
+        strokeDashoffset={40 - (growthProgress < 0.6 
+          ? (Math.max(0, growthProgress - 0.3) / 0.3) * 39.5 
+          : 39.5 + ((growthProgress - 0.6) / 0.4) * 0.5)}
+      />
+      
+      {/* BRANCH 2 */}
+      <path 
+        d="M50,60 Q65,50 75,35" 
+        stroke="#5D4037" 
+        strokeWidth={1.5 + (growthProgress * 0.8)} 
+        fill="none" 
+        strokeLinecap="round" 
+        strokeDasharray="50" 
+        strokeDashoffset={50 - (growthProgress < 0.7 
+          ? (Math.max(0, growthProgress - 0.4) / 0.3) * 49.5 
+          : 49.5 + ((growthProgress - 0.7) / 0.3) * 0.5)}
+      />
+      
+      {/* BRANCH 3 */}
+      <path 
+        d="M50,50 Q45,35 52,20" 
+        stroke="#5D4037" 
+        strokeWidth={1 + (growthProgress * 0.8)} 
+        fill="none" 
+        strokeLinecap="round" 
+        strokeDasharray="40" 
+        strokeDashoffset={40 - (growthProgress < 0.7 
+          ? (Math.max(0, growthProgress - 0.5) / 0.2) * 39.5 
+          : 39.5 + ((growthProgress - 0.7) / 0.3) * 0.5)}
+      />
+      
+      {/* LEAVES/CIRCLES */}
+      {(() => {
+        const flowerScale = Math.max(0, (growthProgress - 0.7) / 0.3);
+        return (
+          <g style={{ opacity: growthProgress > 0.7 ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+            {/* Left Branch Main Cluster */}
+            <g transform="translate(25, 45)">
+              <circle r={8 * flowerScale} fill="#FFB7C5" opacity="0.8" />
+              <circle cx="-4" cy="-3" r={6 * flowerScale} fill="#FFC0CB" opacity="0.6" />
+              <circle cx="3" cy="2" r={5 * flowerScale} fill="#FFD1DC" opacity="0.7" />
+            </g>
+
+            {/* Right Branch Main Cluster */}
+            <g transform="translate(75, 35)">
+              <circle r={10 * flowerScale} fill="#FFC0CB" opacity="0.8" />
+              <circle cx="5" cy="-4" r={7 * flowerScale} fill="#FFB7C5" opacity="0.6" />
+              <circle cx="-3" cy="4" r={6 * flowerScale} fill="#FFD1DC" opacity="0.7" />
+            </g>
+
+            {/* Top Branch Main Cluster */}
+            <g transform="translate(52, 20)">
+              <circle r={12 * flowerScale} fill="#FFD1DC" opacity="0.9" />
+              <circle cx="-6" cy="-2" r={8 * flowerScale} fill="#FFB7C5" opacity="0.7" />
+              <circle cx="4" cy="3" r={7 * flowerScale} fill="#FFC0CB" opacity="0.6" />
+            </g>
+
+            {/* Filler Clusters (Mid-Branch) */}
+            <g transform="translate(40, 58)">
+              <circle r={5 * flowerScale} fill="#FFB7C5" opacity="0.6" />
+              <circle cx="2" cy="-2" r={4 * flowerScale} fill="#FFC0CB" opacity="0.5" />
+            </g>
+            <g transform="translate(62, 52)">
+              <circle r={6 * flowerScale} fill="#FFC0CB" opacity="0.6" />
+              <circle cx="-2" cy="-2" r={4 * flowerScale} fill="#FFD1DC" opacity="0.5" />
+            </g>
+            <g transform="translate(48, 40)">
+              <circle r={5 * flowerScale} fill="#FFD1DC" opacity="0.7" />
+            </g>
+          </g>
+        );
+      })()}
+    </g>
+  </svg>
+
+  {/* Floating Petals */}
+  {(running || timerCompleted) && growthProgress > 0.8 && [1, 2, 3, 4, 5, 6, 7].map((i) => (
+    <div key={i} style={{ position: "absolute", top: "25%", left: `${10 + i * 12}%`, width: "8px", height: "10px", background: "#FFB7C5", borderRadius: "80% 10% 80% 50%", animation: `petalFloat ${4 + i}s infinite linear`, animationDelay: `${i * 0.4}s`, opacity: 0 }} />
+  ))}
+</div>
