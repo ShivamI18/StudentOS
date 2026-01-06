@@ -84,7 +84,7 @@ const TreeGrowthTimer = ({ durationInSeconds = 1500, setSession }) => {
     
     {/* TRUNK */}
     <path
-      d={`M46,95 L54,95 L52,45 L48,45 Z`}
+      d={`M46,95 L54,95 L51,45 L49,45 Z`}
       fill="#5D4037"
       style={{ 
         transition: 'opacity 0.5s ease',
