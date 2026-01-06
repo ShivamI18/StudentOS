@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
-  const { user, resendVerificationEmail, reloadUser } = useAuth();
+  const { user, resendVerificationEmail, reloadUser,logout } = useAuth();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -29,35 +29,61 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div
+  <div
   style={{
     minHeight: "100vh",
     width: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#ECEFF4",
+    background:
+      "linear-gradient(180deg, #FFF5F7 0%, #FFFFFF 100%)",
     padding: "4vh 5vw",
+    fontFamily: "system-ui, -apple-system, sans-serif",
   }}
 >
+  <button
+    onClick={()=>{
+      logout()
+      navigate('/')
+    }}
+    style={{
+      position: "fixed",
+      top: "2vh",
+      right: "4vw",
+      padding: "0.6rem 1.4rem",
+      fontSize: "0.75rem",
+      borderRadius: "999px",
+      border: "none",
+      background: "rgba(255,255,255,0.6)",
+      backdropFilter: "blur(12px)",
+      color: "#EC4899",
+      boxShadow: "0 8px 24px rgba(236,72,153,0.25)",
+      cursor: "pointer",
+      zIndex: 10,
+      fontWeight: 600,
+    }}
+  >
+    Log out
+  </button>
   <div
     style={{
       width: "100%",
       maxWidth: "26rem",
-      backgroundColor: "#ECEFF4",
-      borderRadius: "1.5rem",
-      padding: "2.5rem 2rem",
-      boxShadow:
-        "0.8rem 0.8rem 1.6rem #D1D9E6, -0.8rem -0.8rem 1.6rem #FFFFFF",
+      borderRadius: "2rem",
+      padding: "2.8rem 2.2rem",
       textAlign: "center",
+      background: "rgba(255,255,255,0.7)",
+      backdropFilter: "blur(18px)",
+      boxShadow: "0 24px 48px rgba(255,154,162,0.25)",
     }}
   >
     <h2
       style={{
-        fontSize: "1.6rem",
-        fontWeight: "600",
-        color: "#2E3440",
-        marginBottom: "1.5rem",
+        fontSize: "1.65rem",
+        fontWeight: 800,
+        color: "#1F2937",
+        marginBottom: "1.6rem",
       }}
     >
       Verify Your Email
@@ -68,9 +94,9 @@ const VerifyEmail = () => {
         <p
           style={{
             fontSize: "0.95rem",
-            color: "#4C566A",
-            lineHeight: "1.5",
-            marginBottom: "2rem",
+            color: "#6B7280",
+            lineHeight: "1.6",
+            marginBottom: "2.2rem",
           }}
         >
           Your email address is not verified yet. Please check your inbox and
@@ -82,17 +108,18 @@ const VerifyEmail = () => {
           disabled={loading}
           style={{
             width: "100%",
-            padding: "0.9rem",
+            padding: "1rem",
             fontSize: "0.95rem",
-            fontWeight: "500",
-            borderRadius: "0.9rem",
+            fontWeight: 700,
+            borderRadius: "999px",
             border: "none",
             cursor: loading ? "not-allowed" : "pointer",
-            backgroundColor: "#ECEFF4",
-            color: "#5E81AC",
+            background:
+              "linear-gradient(135deg, #FF9AA2 0%, #F472B6 100%)",
+            color: "#FFFFFF",
             boxShadow:
-              "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
-            marginBottom: "1.2rem",
+              "0 12px 30px rgba(255,154,162,0.45)",
+            marginBottom: "1.4rem",
           }}
         >
           {loading ? "Sending..." : "Resend Verification Email"}
@@ -102,7 +129,7 @@ const VerifyEmail = () => {
           <p
             style={{
               fontSize: "0.85rem",
-              color: "#5E81AC",
+              color: "#FF9AA2",
               marginBottom: "1.2rem",
             }}
           >
@@ -115,8 +142,10 @@ const VerifyEmail = () => {
           onClick={handleContinue}
           style={{
             fontSize: "0.85rem",
-            color: "#5E81AC",
+            color: "#FF9AA2",
             textDecoration: "none",
+            fontWeight: 600,
+            cursor:'pointer',
           }}
         >
           Refresh Page
@@ -127,11 +156,12 @@ const VerifyEmail = () => {
         <p
           style={{
             fontSize: "1rem",
-            color: "#4CAF50",
-            marginBottom: "2rem",
+            color: "#22C55E",
+            marginBottom: "2.2rem",
+            fontWeight: 600,
           }}
         >
-          ✅ Your email is already verified!
+          Your email is already verified!
         </p>
 
         <Link
@@ -139,14 +169,16 @@ const VerifyEmail = () => {
           onClick={handleContinue}
           style={{
             display: "inline-block",
-            padding: "0.8rem 2rem",
+            padding: "0.9rem 2.4rem",
             fontSize: "0.95rem",
-            borderRadius: "1rem",
+            fontWeight: 700,
+            borderRadius: "999px",
             textDecoration: "none",
-            color: "#5E81AC",
-            backgroundColor: "#ECEFF4",
+            color: "#FFFFFF",
+            background:
+              "linear-gradient(135deg, #FF9AA2 0%, #F472B6 100%)",
             boxShadow:
-              "0.4rem 0.4rem 0.8rem #D1D9E6, -0.4rem -0.4rem 0.8rem #FFFFFF",
+              "0 12px 30px rgba(255,154,162,0.45)",
           }}
         >
           Continue
