@@ -557,52 +557,52 @@ const Dashboard = () => {
 
   {/* Bottom Nav */}
   <div
-      style={{
-        position: "fixed",
-        bottom: "1.5rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "90%",
-        maxWidth: "24rem",
-        height: "4.5rem",
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        background: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderRadius: "100px",
-        boxShadow: "0 15px 35px rgba(255, 143, 177, 0.15)",
-        border: "1px solid rgba(255, 255, 255, 0.5)",
-        zIndex: 100,
-      }}
-    >
-      {[
-        { label: "Dashboard", path: "/dashboard" },
-        { label: "Focus", path: "/focusmode" },
-        { label: "Tools", path: "/tools" },
-      ].map((item) => (
-        <NavLink
-          key={item.path}
-          to={item.path}
-          style={({ isActive }) => ({
-            fontSize: "0.8rem",
-            fontWeight: 700,
-            color: isActive ? "#D6336C" : "#A0A0A0",
-            textDecoration: "none",
-            padding: "0.75rem 1rem",
-            borderRadius: "100px",
-            backgroundColor: isActive ? "#FFF0F3" : "transparent",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          })}
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </div>
+            style={{
+              position: "fixed",
+              bottom: "1.5rem",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "calc(100% - 2rem)",
+              maxWidth: "24rem",
+              height: "4.5rem",
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              background: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderRadius: "100px",
+              boxShadow: "0 15px 35px rgba(255, 143, 177, 0.15)",
+              border: "1px solid rgba(255, 255, 255, 0.5)",
+              zIndex: 100,
+            }}
+          >
+            {[
+              { label: "Dashboard", path: "/dashboard" },
+              { label: "Focus", path: "/focusmode" },
+              { label: "Tools", path: "/tools" },
+            ].map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                style={({ isActive }) => ({
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: isActive ? "#D6336C" : "#A0A0A0",
+                  textDecoration: "none",
+                  padding: "0.6rem 0.8rem",
+                  borderRadius: "100px",
+                  backgroundColor: isActive ? "#FFF0F3" : "transparent",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                })}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
 </div>
   );
 };

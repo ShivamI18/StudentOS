@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   addHabitDB,
   getHabitsDB,
@@ -7,32 +7,46 @@ import {
   getTasksDB,
   addTaskDB,
   updateTaskDB,
-  deleteTaskDB, // Recommended to add for full functionality
+  deleteTaskDB,
 } from "../components/db.js";
 import Habitbox from "../components/Habitbox.jsx";
 import { useForm } from "react-hook-form";
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
 const Tools = () => {
   const [habits, setHabits] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [addHabit, setAddHabit] = useState(false);
   const [taskInput, setTaskInput] = useState("");
+  const [priority, setPriority] = useState("P1");
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, reset, handleSubmit } = useForm();
 
-  // 1. Initial Data Fetch from IndexedDB
+  // Priority Configuration
+  const priorityConfig = {
+    P1: { label: "Urgent & Important", color: "#FF6B6B", bg: "#FFF0F0", weight: 1 },
+    P2: { label: "Important, Not Immediate", color: "#4DABF7", bg: "#E7F5FF", weight: 2 },
+    P3: { label: "Immediate, Not Important", color: "#FCC419", bg: "#FFF9DB", weight: 3 },
+    P4: { label: "Not Important / Not Immediate", color: "#A0A0A0", bg: "#F8F9FA", weight: 4 },
+  };
+
+  // Helper function to safely sort tasks without crashing on undefined priorities
+  const sortTasks = (data) => {
+    return [...data].sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      const weightA = priorityConfig[a.priority]?.weight ?? 5;
+      const weightB = priorityConfig[b.priority]?.weight ?? 5;
+      return weightA - weightB;
+    });
+  };
+
   useEffect(() => {
     getHabitsDB().then(setHabits);
-    getTasksDB().then(setTasks);
+    getTasksDB().then((data) => {
+      setTasks(sortTasks(data));
+    });
   }, []);
 
-  // 2. Midnight Reset Logic for Habits
   useEffect(() => {
     const check = setInterval(() => {
       const now = new Date();
@@ -43,36 +57,36 @@ const Tools = () => {
     return () => clearInterval(check);
   }, []);
 
-  // --- Task List Handlers ---
   const addTask = async (e) => {
     e.preventDefault();
     if (!taskInput.trim()) return;
-    
-    const newTask = { 
-      text: taskInput, 
-      priority: "Medium", 
+
+    const newTask = {
+      text: taskInput,
+      priority: priority,
       completed: false,
-      createdAt: new Date().toISOString() 
+      createdAt: new Date().toISOString(),
     };
-    
-    const id = await addTaskDB(newTask); // Save to IndexedDB
-    setTasks([{ ...newTask, id }, ...tasks]); // Update UI
+
+    const id = await addTaskDB(newTask);
+    setTasks(sortTasks([{ ...newTask, id }, ...tasks]));
     setTaskInput("");
+    setPriority("P1");
   };
 
   const toggleTask = async (task) => {
     const updatedTask = { ...task, completed: !task.completed };
-    await updateTaskDB(updatedTask); // Update IndexedDB
-    setTasks(tasks.map(t => t.id === task.id ? updatedTask : t)); // Update UI
+    await updateTaskDB(updatedTask);
+    const newTasks = tasks.map((t) => (t.id === task.id ? updatedTask : t));
+    setTasks(sortTasks(newTasks));
   };
 
   const removeTask = async (e, id) => {
-    e.stopPropagation(); // Prevent toggling when clicking delete
+    e.stopPropagation();
     await deleteTaskDB(id);
-    setTasks(tasks.filter(t => t.id !== id));
+    setTasks(tasks.filter((t) => t.id !== id));
   };
 
-  // --- Habit Handlers ---
   const deleteHabit = (id) => {
     deleteHabitDB(id).then(() => {
       setHabits(habits.filter((h) => h.id !== id));
@@ -101,140 +115,123 @@ const Tools = () => {
         backgroundColor: "#FFF9FA",
         background: "linear-gradient(180deg, #FFF1F4 0%, #FFFFFF 100%)",
         paddingBottom: "15vh",
-        fontFamily: "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        fontFamily: "sans-serif",
       }}
     >
-      {/* Page Header */}
-      <div style={{ maxWidth: "60rem", margin: "0 auto", padding: "5rem 1.5rem 2rem" }}>
-        <h2 style={{ fontSize: "2.2rem", fontWeight: 800, color: "#2D3436", letterSpacing: "-0.04em", margin: 0 }}>
+      <div style={{ width: "95%", maxWidth: "60rem", margin: "0 auto", padding: "4rem 1rem 2rem" }}>
+        <h2 style={{ fontSize: "clamp(1.8rem, 5vw, 2.2rem)", fontWeight: 800, color: "#2D3436", margin: 0 }}>
           Study Suite <span style={{ opacity: 0.8 }}>🌸</span>
         </h2>
-        <p style={{ color: "#A0A0A0", fontSize: "0.9rem", marginTop: "0.5rem", fontWeight: 500 }}>
+        <p style={{ color: "#A0A0A0", fontSize: "0.9rem", marginTop: "0.5rem" }}>
           Track your focus and build lasting routines.
         </p>
       </div>
 
-      <div style={{ maxWidth: "60rem", margin: "0 auto", padding: "0 1.5rem", display: "flex", flexDirection: "column", gap: "3.5rem" }}>
-        
-        {/* SECTION 1: STUDY TASK LIST (IndexedDB) */}
+      <div style={{ width: "95%", maxWidth: "60rem", margin: "0 auto", padding: "0 1rem", display: "flex", flexDirection: "column", gap: "2.5rem" }}>
         <section>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem" }}>
-            <h3 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#FF8FB1", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              Focus Tasks
-            </h3>
-            <span style={{ fontSize: "0.75rem", color: "#B0B0B0", fontWeight: 600 }}>
-              {tasks.filter(t => !t.completed).length} Pending
-            </span>
+            <h3 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#FF8FB1", textTransform: "uppercase" }}>Focus Tasks</h3>
+            <span style={{ fontSize: "0.75rem", color: "#B0B0B0" }}>{tasks.filter((t) => !t.completed).length} Pending</span>
           </div>
+          
 
-          <div style={{
-            backgroundColor: "rgba(255, 255, 255, 0.6)",
-            backdropFilter: "blur(12px)",
-            borderRadius: "2.2rem",
-            padding: "1.8rem",
-            border: "1px solid rgba(255, 255, 255, 0.8)",
-            boxShadow: "0 15px 35px rgba(255, 143, 177, 0.08)",
-          }}>
-            <form onSubmit={addTask} style={{ display: "flex", gap: "0.8rem", marginBottom: "1.5rem" }}>
-              <input
-                value={taskInput}
-                onChange={(e) => setTaskInput(e.target.value)}
-                placeholder="What's your next study goal?"
-                style={{
-                  flex: 1,
-                  padding: "1rem 1.4rem",
-                  borderRadius: "1.4rem",
-                  border: "1px solid #FFF0F3",
-                  backgroundColor: "#FFFFFF",
-                  outline: "none",
-                  fontSize: "1rem",
-                  transition: "all 0.3s ease",
-                  boxShadow: "inset 0 2px 4px rgba(255, 143, 177, 0.02)"
-                }}
-              />
-              <button type="submit" style={{
-                backgroundColor: "#FFB7C5",
-                border: "none",
-                borderRadius: "1.4rem",
-                width: "3.8rem",
-                color: "white",
-                fontSize: "1.8rem",
-                cursor: "pointer",
-                boxShadow: "0 8px 20px rgba(255, 143, 177, 0.3)",
-                transition: "transform 0.2s ease"
-              }}
-              onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-              onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
-              >+</button>
-            </form>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-              {tasks.map(task => (
-                <div 
-                  key={task.id}
-                  onClick={() => toggleTask(task)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1.2rem",
-                    padding: "1.1rem",
-                    backgroundColor: task.completed ? "rgba(255, 255, 255, 0.3)" : "#FFFFFF",
-                    borderRadius: "1.4rem",
-                    cursor: "pointer",
-                    border: "1px solid #FFF5F7",
-                    opacity: task.completed ? 0.6 : 1,
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                  }}
-                >
-                  <div style={{
-                    width: "1.5rem",
-                    height: "1.5rem",
-                    borderRadius: "50%",
-                    border: "2px solid #FFB7C5",
-                    backgroundColor: task.completed ? "#FFB7C5" : "transparent",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.8rem",
-                    color: "white"
-                  }}>{task.completed && "✓"}</div>
-                  
-                  <span style={{ 
-                    flex: 1, 
-                    fontSize: "1rem", 
-                    textDecoration: task.completed ? "line-through" : "none", 
-                    color: "#2D3436", 
-                    fontWeight: 600 
-                  }}>
-                    {task.text}
-                  </span>
-
-                  <button 
-                    onClick={(e) => removeTask(e, task.id)}
-                    style={{ background: "none", border: "none", color: "#FFB7C5", cursor: "pointer", fontSize: "1.2rem", padding: "0 0.5rem" }}
+          <div style={{ backgroundColor: "rgba(255, 255, 255, 0.6)", backdropFilter: "blur(12px)", borderRadius: "2.2rem", padding: "1.5rem", border: "1px solid rgba(255, 255, 255, 0.8)" }}>
+            <form onSubmit={addTask} style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", gap: "0.8rem" }}>
+                <input
+                  value={taskInput}
+                  onChange={(e) => setTaskInput(e.target.value)}
+                  placeholder="What's your next study goal?"
+                  style={{ flex: 1, padding: "1rem", borderRadius: "1.4rem", border: "1px solid #FFF0F3" }}
+                />
+                <button type="submit" style={{ backgroundColor: "#FFB7C5", border: "none", borderRadius: "1.4rem", width: "3.5rem", color: "white", fontSize: "1.8rem" }}>+</button>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                {Object.keys(priorityConfig).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setPriority(key)}
+                    style={{
+                      padding: "0.5rem 0.9rem",
+                      borderRadius: "1rem",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      border: priority === key ? `2px solid ${priorityConfig[key].color}` : "1px solid #FFF0F3",
+                      backgroundColor: priority === key ? priorityConfig[key].bg : "#FFFFFF",
+                      color: priority === key ? priorityConfig[key].color : "#A0A0A0",
+                    }}
                   >
-                    ×
+                    {priorityConfig[key].label}
                   </button>
-                </div>
-              ))}
-              {tasks.length === 0 && (
+                ))}
+              </div>
+            </form>
+{tasks.length === 0 && (
                 <p style={{ textAlign: "center", color: "#D0D0D0", fontSize: "0.9rem", padding: "1rem" }}>
                   Your task list is empty. Add a goal to stay focused!
                 </p>
               )}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+              {tasks.map((task) => {
+                // FALLBACKS: This prevents the "undefined reading color" error
+                const config = priorityConfig[task.priority] || priorityConfig["P4"];
+                
+                return (
+                  <div
+                    key={task.id}
+                    onClick={() => toggleTask(task)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      padding: "1.1rem",
+                      backgroundColor: task.completed ? "rgba(255, 255, 255, 0.3)" : "#FFFFFF",
+                      borderRadius: "1.5rem",
+                      border: "1px solid #FFF5F7",
+                      opacity: task.completed ? 0.6 : 1,
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "4px", backgroundColor: config.color }} />
+                    <div style={{
+                      width: "1.4rem",
+                      height: "1.4rem",
+                      borderRadius: "50%",
+                      border: `2px solid ${config.color}`,
+                      backgroundColor: task.completed ? config.color : "transparent",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      color: "white"
+                    }}>
+                      {task.completed && "✓"}
+                    </div>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                      <span style={{ fontSize: "0.95rem", textDecoration: task.completed ? "line-through" : "none", color: "#2D3436", fontWeight: 600 }}>
+                        {task.text}
+                      </span>
+                      <span style={{ fontSize: "0.65rem", fontWeight: 800, color: config.color, textTransform: "uppercase" }}>
+                        {config.label}
+                      </span>
+                    </div>
+                    <button onClick={(e) => removeTask(e, task.id)} style={{ background: "none", border: "none", color: "#FFB7C5", fontSize: "1.2rem" }}>×</button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* SECTION 2: HABIT TRACKER (IndexedDB) */}
         <section>
-          <h3 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#FF8FB1", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "1.2rem" }}>
-            Daily Habits
-          </h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
+          <h3 style={{ fontSize: "0.85rem", fontWeight: 800, color: "#FF8FB1", textTransform: "uppercase", marginBottom: "1.2rem" }}>Daily Habits</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.5rem" }}>
             {habits.map((itm) => (
               <Habitbox key={itm.id} habit={itm} onDelete={() => deleteHabit(itm.id)} />
             ))}
+          </div>
             {habits.length === 0 && (
               <div style={{ 
                 width: "100%", textAlign: "center", padding: "4rem 2rem", 
@@ -245,103 +242,32 @@ const Tools = () => {
                 <p style={{ color: "#A0A0A0", fontWeight: 600 }}>Build a routine. Add your first habit!</p>
               </div>
             )}
-          </div>
         </section>
       </div>
 
-      {/* Habit Form Overlay */}
       {addHabit && (
-        <div style={{
-          position: "fixed", inset: 0, backgroundColor: "rgba(45, 52, 54, 0.2)",
-          backdropFilter: "blur(16px)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center"
-        }}>
-          <form onSubmit={handleSubmit(handleHabitSubmit)} style={{
-            width: "90%", maxWidth: "24rem", backgroundColor: "#FFFFFF", padding: "3rem 2rem",
-            borderRadius: "2.5rem", boxShadow: "0 40px 80px rgba(255, 143, 177, 0.25)", display: "flex", flexDirection: "column", gap: "1.5rem"
-          }}>
-            <div style={{ textAlign: "center", fontSize: "1.6rem", fontWeight: 800, color: "#2D3436" }}>New Habit</div>
-            <input
-              type="text"
-              placeholder="E.g., Morning Coding, Meditation..."
-              {...register("habitName", { required: true })}
-              autoFocus
-              style={{ 
-                padding: "1.1rem 1.4rem", borderRadius: "1.4rem", border: "1px solid #FFF0F3", 
-                backgroundColor: "#FFF9FA", outline: "none", fontSize: "1rem" 
-              }}
-            />
-            <button type="submit" style={{
-              padding: "1.1rem", borderRadius: "1.4rem", border: "none", fontWeight: 700,
-              background: "linear-gradient(135deg, #FFB7C5 0%, #FF8FB1 100%)", color: "white", 
-              cursor: "pointer", boxShadow: "0 10px 20px rgba(255, 143, 177, 0.3)"
-            }}>Start Tracking</button>
-            <button type="button" onClick={() => setAddHabit(false)} style={{ background: "none", border: "none", color: "#A0A0A0", cursor: "pointer", fontWeight: 600 }}>Maybe later</button>
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(45, 52, 54, 0.2)", backdropFilter: "blur(16px)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <form onSubmit={handleSubmit(handleHabitSubmit)} style={{ width: "90%", maxWidth: "24rem", backgroundColor: "#FFFFFF", padding: "2rem", borderRadius: "2.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div style={{ textAlign: "center", fontSize: "1.6rem", fontWeight: 800 }}>New Habit</div>
+            <input type="text" placeholder="E.g., Meditation" {...register("habitName", { required: true })} style={{ padding: "1rem", borderRadius: "1.4rem", border: "1px solid #FFF0F3" }} />
+            <button type="submit" style={{ padding: "1rem", borderRadius: "1.4rem", border: "none", background: "linear-gradient(135deg, #FFB7C5, #FF8FB1)", color: "white", fontWeight: 700 }}>Start Tracking</button>
+            <button type="button" onClick={() => setAddHabit(false)} style={{ background: "none", border: "none", color: "#A0A0A0" }}>Cancel</button>
           </form>
         </div>
       )}
 
-      {/* Floating Add Habit Button */}
       {!addHabit && (
-        <div onClick={() => setAddHabit(true)} style={{
-          position: "fixed", bottom: "11vh", right: "2rem", width: "4.5rem", height: "4.5rem",
-          borderRadius: "50%", background: "linear-gradient(135deg, #FFB7C5 0%, #FF8FB1 100%)",
-          display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.8rem",
-          color: "#FFFFFF", cursor: "pointer", boxShadow: "0 15px 35px rgba(255, 143, 177, 0.4)", zIndex: 1100,
-          transition: "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
-        }}
-        onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.1) rotate(90deg)"}
-        onMouseOut={(e) => e.currentTarget.style.transform = "scale(1) rotate(0deg)"}
-        >+</div>
+        <div onClick={() => setAddHabit(true)} style={{ position: "fixed", bottom: "12vh", right: "1.5rem", width: "4rem", height: "4rem", borderRadius: "50%", background: "linear-gradient(135deg, #FFB7C5, #FF8FB1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", color: "#FFFFFF", boxShadow: "0 10px 20px rgba(0,0,0,0.1)", zIndex: 1100 }}>+</div>
       )}
 
       {/* Bottom Nav Bar */}
-      <div
-          style={{
-            position: "fixed",
-            bottom: "1.5rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "90%",
-            maxWidth: "24rem",
-            height: "4.5rem",
-            display: "flex",
-            justifyContent: "space-around",
-            alignItems: "center",
-            background: "rgba(255, 255, 255, 0.85)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            borderRadius: "100px",
-            boxShadow: "0 15px 35px rgba(255, 143, 177, 0.15)",
-            border: "1px solid rgba(255, 255, 255, 0.5)",
-            zIndex: 100,
-          }}
-        >
-          {[
-            { label: "Dashboard", path: "/dashboard" },
-            { label: "Focus", path: "/focusmode" },
-            { label: "Tools", path: "/tools" },
-          ].map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              style={({ isActive }) => ({
-                fontSize: "0.8rem",
-                fontWeight: 700,
-                color: isActive ? "#D6336C" : "#A0A0A0",
-                textDecoration: "none",
-                padding: "0.75rem 1rem",
-                borderRadius: "100px",
-                backgroundColor: isActive ? "#FFF0F3" : "transparent",
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              })}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
+      <div style={{ position: "fixed", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)", width: "90%", maxWidth: "24rem", height: "4.5rem", display: "flex", justifyContent: "space-around", alignItems: "center", background: "rgba(255, 255, 255, 0.9)", backdropFilter: "blur(20px)", borderRadius: "100px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", zIndex: 100 }}>
+        {[{ label: "Dashboard", path: "/dashboard" }, { label: "Focus", path: "/focusmode" }, { label: "Tools", path: "/tools" }].map((item) => (
+          <NavLink key={item.path} to={item.path} style={({ isActive }) => ({ fontSize: "0.75rem", fontWeight: 700, color: isActive ? "#D6336C" : "#A0A0A0", textDecoration: "none", padding: "0.6rem 1rem", borderRadius: "100px", backgroundColor: isActive ? "#FFF0F3" : "transparent" })}>
+            {item.label}
+          </NavLink>
+        ))}
+      </div>
     </div>
   );
 };
