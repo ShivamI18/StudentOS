@@ -83,7 +83,6 @@ const TreeGrowthTimer = ({
     setTimeLeft(durationInSeconds);
     setStarted(false);
     setRunning(false);
-    setIsmusicplaying(true)
     setTimerCompleted(false);
   };
 
