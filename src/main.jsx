@@ -12,6 +12,13 @@ import VerifyEmail from './pages/VerifyEmail.jsx';
 import GoogleAuth from './components/GoogleAuth.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { StatusBar, Style } from '@capacitor/status-bar';
+
+if (Capacitor.isNativePlatform()) {
+  StatusBar.setStyle({ style: Style.Dark });
+  StatusBar.setBackgroundColor({ color: '#ffffff' });
+  StatusBar.setOverlaysWebView({ overlay: false });
+}
 
 const BackButtonHandler = () => {
   const navigate = useNavigate();
