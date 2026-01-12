@@ -26,6 +26,7 @@ const Focusmode = () => {
   const [showSetting, setShowSetting] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const [userdatasaved, setUserdatasaved] = useState(false)
   const [sessionsaved, setSessionsaved] = useState(false);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [sessionactive, setSessionactive] = useState(0);
@@ -35,6 +36,7 @@ const Focusmode = () => {
   const audioRef = useRef(null);
   const [musicurl, setMusicurl] = useState(null);
   const [analysisState, setAnalysisState] = useState('')
+
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -86,6 +88,7 @@ const Focusmode = () => {
 
     setTasks(savedTasks);
     setHabits(savedHabits);
+    setUserdatasaved(true)
     setUserData({
       subject: data.subject,
       topics: data.topics,
@@ -126,6 +129,7 @@ const Focusmode = () => {
       setAnalysis(parsed);
       console.log("Analysis is saved.");
     } catch (err) {
+      setAnalysisState("Error" + err.message);
       console.error(err);
     }
     setAnalysisLoading(false);
@@ -153,6 +157,7 @@ const Focusmode = () => {
       return JSON.parse(sanitized);
     } catch (err) {
       console.error("Invalid AI JSON format:", err.message);
+      setAnalysisState("Server Error. Try Again after sometime")
       return null;
     }
   };
@@ -572,6 +577,7 @@ const Focusmode = () => {
 
               <button
                 onClick={handleAnalysis}
+                disabled={userdatasaved}
                 style={{
                   marginTop: "1.5rem",
                   padding: "1rem",
