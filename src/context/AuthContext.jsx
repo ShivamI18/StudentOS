@@ -13,6 +13,22 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [second, setSecond] = useState(25 * 60);
+  const [started, setStarted] = useState(false);
+  const [sessionactive, setSessionactive] = useState(0);
+
+  useEffect(() => {
+    if (!started) {
+      return;
+    }
+    const sAtive = setInterval(() => {
+      setSessionactive((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(sAtive);
+    };
+  }, [started]);
 
   const loginWithEmailPassword = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(
@@ -73,7 +89,10 @@ export function AuthProvider({ children }) {
         loginWithEmailPassword,
         signupWithEmailPassword,
         resendVerificationEmail,
-        reloadUser, // 👈 exposed here
+        reloadUser,
+        second,
+        setSecond,
+        sessionactive,
       }}
     >
       {!loading && children}

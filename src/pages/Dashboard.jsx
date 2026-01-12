@@ -2,7 +2,6 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
 import {
   collection,
   getDocs,
@@ -20,6 +19,7 @@ const Dashboard = () => {
   const [sessions, setSessions] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
   const [apprefreshtime, setApprefreshtime] = useState("");
+
 
   const fetchSessions = async () => {
     if (!user) return;
@@ -70,19 +70,26 @@ const Dashboard = () => {
   }, [user]);
 
   const fetchStats = async () => {
-    setLoading(true);
-    try {
-      const result = await UsageStats.getUsageStats();
-      const sortedData = result.data.sort();
-      setUsageData(sortedData);
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Please enable 'Usage Access' for this app in the next screen.");
+  setLoading(true);
+  try {
+
+    const result = await UsageStats.getUsageStats();
+
+    if (!result?.data || result.data.length === 0) {
+      // Permission very likely not granted
       await UsageStats.openUsageAccessSettings();
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    const sortedData = result.data.sort();
+    setUsageData(sortedData);
+  } catch (err) {
+    console.log("UsageStats error:", err);
+    await UsageStats.openUsageAccessSettings();
+  } finally {
+    setLoading(false);
+  }
+};
 
   const updateTime = () => {
     const now = new Date();
@@ -128,7 +135,6 @@ const Dashboard = () => {
         color: "#4A4A4A",
       }}
     >
-      {/* Logout */}
       <button
         onClick={logout}
         style={{
@@ -240,6 +246,12 @@ const Dashboard = () => {
           >
             {loading ? "Refreshing..." : "Refresh Usage Data"}
           </button>
+          {usageData.length===0 && <p style={{
+            color:'red',
+            fontWeight:'800',
+          }}>First give Usage Access Permission. <Link to='/help' style={{
+            color:'red'
+          }}>Learn More.</Link> </p> }
 
           {usageData.map((app, index) => {
             const maxTime = Math.max(

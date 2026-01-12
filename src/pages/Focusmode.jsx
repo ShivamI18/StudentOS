@@ -8,6 +8,7 @@ import UsageStats from "../plugins/usageStats";
 import TreeGrowthTimer from "../components/TreeGrowthTimer.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getTasksDB, getHabitsDB } from "../components/db.js";
+import { useTimer } from "../context/TimerContext.jsx";
 
 const Focusmode = () => {
   const {
@@ -20,7 +21,7 @@ const Focusmode = () => {
   const [userData, setUserData] = useState({});
   const [Analysis, setAnalysis] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
-  const [seconds, setSeconds] = useState(25 * 60);
+  const { seconds , setSeconds} = useTimer();
   const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [showSetting, setShowSetting] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,6 +34,8 @@ const Focusmode = () => {
   const [ismusicplaying, setIsmusicplaying] = useState(false);
   const audioRef = useRef(null);
   const [musicurl, setMusicurl] = useState(null);
+  const [analysisState, setAnalysisState] = useState('')
+
   useEffect(() => {
     const audio = audioRef.current;
     if (ismusicplaying) {
@@ -106,7 +109,8 @@ const Focusmode = () => {
         }
       );
 
-      await response.json();
+      const result = await response.json();
+      setAnalysisState(result.message);
 
       const resp = await fetch(
         `${import.meta.env.VITE_BACKEND_API_KEY}/api/focusmode`,
@@ -562,6 +566,7 @@ const Focusmode = () => {
                   {loading
                     ? "Syncing app usage..."
                     : "🌸 Generating AI insights..."}
+                    {analysisState && <p>{analysisState}, </p> }
                 </div>
               )}
 
@@ -827,7 +832,7 @@ const Focusmode = () => {
                 }}
                 {...register("mins", {
                   required: true,
-                  min: { value: 10, message: "Minimum 10 mins" },
+                  min: { value: 5, message: "Minimum 5 mins" },
                   max: { value: 120, message: "Maximum 120 mins" },
                 })}
               />
@@ -902,7 +907,6 @@ const Focusmode = () => {
                 Focus Session
               </h2>
               <TreeGrowthTimer
-                durationInSeconds={seconds}
                 setSession={setIsSessionComplete}
                 setSessionactive={setSessionactive}
                 setIsmusicplaying={setIsmusicplaying}

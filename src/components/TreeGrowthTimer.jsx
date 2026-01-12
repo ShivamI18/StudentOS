@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import { useTimer } from "../context/TimerContext";
 const TreeGrowthTimer = ({
-  durationInSeconds = 1500,
   setSession,
   setSessionactive,
   setIsmusicplaying,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(durationInSeconds);
-  const [running, setRunning] = useState(false);
-  const [timerCompleted, setTimerCompleted] = useState(false);
-  const [started, setStarted] = useState(false);
-  const growthProgress = (durationInSeconds - timeLeft) / durationInSeconds;
-  const audioRef = useRef(false);
+  const { 
+    timeLeft, setTimeLeft, 
+    running, setRunning, 
+    timerCompleted, setTimerCompleted,
+    started, setStarted,
+    seconds,
+    resetState
+  } = useTimer();
+
+  const growthProgress = (seconds - timeLeft) / seconds;
+  const audioRef = useRef(null);
 
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -55,35 +59,28 @@ const TreeGrowthTimer = ({
     }
   }, [timerCompleted]);
 
-  useEffect(() => {
-    if (!running || timeLeft <= 0) return;
+  // useEffect(() => {
+  //   if (!running || timeLeft <= 0) return;
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setRunning(false);
-          setTimerCompleted(true);
-          setStarted(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  //   const timer = setInterval(() => {
+  //     setTimeLeft((prev) => {
+  //       if (prev <= 1) {
+  //         clearInterval(timer);
+  //         setRunning(false);
+  //         setTimerCompleted(true);
+  //         setStarted(false);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(timer);
-  }, [running, timeLeft]);
+  //   return () => clearInterval(timer);
+  // }, [running, timeLeft]);
 
   const handleContinue = () => {
     if (setSession) setSession(true);
     resetState();
-  };
-
-  const resetState = () => {
-    setTimeLeft(durationInSeconds);
-    setStarted(false);
-    setRunning(false);
-    setTimerCompleted(false);
   };
 
   return (
@@ -398,7 +395,7 @@ const TreeGrowthTimer = ({
               {running ? "Pause" : "Start Session"}
             </button>
 
-            {!running && timeLeft < durationInSeconds && (
+            {!running && timeLeft < seconds && (
               <button
                 onClick={resetState}
                 style={{
